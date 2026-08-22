@@ -206,105 +206,27 @@ class WebResponsiveWrapper extends StatelessWidget {
       return child;
     }
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Dark slate web backdrop
-      body: Center(
-        child: Container(
-          width: min(media.size.width * 0.94, 1150),
-          height: min(media.size.height * 0.96, 920),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFC),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF334155), width: 1),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.4),
-                blurRadius: 30,
-                spreadRadius: 4,
-                offset: const Offset(0, 12),
-              ),
-            ],
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              // Top Web Branding Header Bar
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFF0F172A),
-                      Color(0xFF0369A1),
-                      Color(0xFF0284C7),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.school_rounded, color: Colors.white, size: 22),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "BAL VIKASH GYAN MANDIR",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 16,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        Text(
-                          "Official School Web Portal",
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    if (UserSession.currentUserId != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white24),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.account_circle_rounded, color: Colors.white, size: 18),
-                            const SizedBox(width: 6),
-                            Text(
-                              UserSession.currentName ?? UserSession.currentRole?.toUpperCase() ?? "Portal",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              Expanded(child: child),
-            ],
-          ),
+    return Container(
+      color: const Color(0xFF0F172A), // Dark slate web backdrop
+      alignment: Alignment.center,
+      child: Container(
+        width: min(media.size.width * 0.94, 1150),
+        height: min(media.size.height * 0.96, 920),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFF334155), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              blurRadius: 30,
+              spreadRadius: 4,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
+        clipBehavior: Clip.antiAlias,
+        child: child,
       ),
     );
   }
