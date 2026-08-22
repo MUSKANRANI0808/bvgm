@@ -12962,41 +12962,42 @@ class _AddExamPageState extends State<AddExamPage> {
                           children: [
                             // 1. Table Top Header Bar (+ Add Subject Column Button)
                             Padding(
-                              padding: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.grid_on_rounded, size: 20, color: Color(0xFF0B3C91)),
-                                  const SizedBox(width: 8),
+                                  const Icon(Icons.grid_on_rounded, size: 18, color: Color(0xFF0B3C91)),
+                                  const SizedBox(width: 6),
                                   const Expanded(
                                     child: Text(
                                       "Marks Table",
                                       style: TextStyle(
-                                        fontSize: 15,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                         color: Color(0xFF1E293B),
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  const SizedBox(width: 6),
+                                  const SizedBox(width: 4),
                                   OutlinedButton.icon(
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: const Color(0xFF0B3C91),
                                       side: const BorderSide(color: Color(0xFF93C5FD)),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      visualDensity: VisualDensity.compact,
                                     ),
                                     onPressed: () {
                                       if (studentBlocks.isNotEmpty) {
                                         addSubject(0);
                                       }
                                     },
-                                    icon: const Icon(Icons.add, size: 16),
+                                    icon: const Icon(Icons.add, size: 15),
                                     label: const Text(
-                                      "Subject Column",
-                                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                                      "Add Subject",
+                                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
                                     ),
                                   ),
                                 ],
