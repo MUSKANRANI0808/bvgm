@@ -888,16 +888,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     ),
                   ),
 
-                  // 🔷 PEEKING STUDENT BOY ILLUSTRATION OVER TOP EDGE OF WHITE CARD
+                  // 🔷 ANIMATED PEEKING STUDENT BOY ILLUSTRATION
                   Positioned(
                     top: -33,
                     right: 16,
-                    child: Image.asset(
-                      "assets/student_peeking.png",
-                      height: 115,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const SizedBox(),
-                    ),
+                    child: const AnimatedPeekingBoy(height: 115),
                   ),
                 ],
               ),
@@ -959,6 +954,117 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           ),
         ),
       ),
+    );
+  }
+}
+
+// ============================================================================
+// 🔷 ANIMATED PEEKING STUDENT BOY WIDGET (HAIR SWAY, EYE BLINKING & BREATHING)
+// ============================================================================
+class AnimatedPeekingBoy extends StatefulWidget {
+  final double height;
+  const AnimatedPeekingBoy({super.key, this.height = 115});
+
+  @override
+  State<AnimatedPeekingBoy> createState() => _AnimatedPeekingBoyState();
+}
+
+class _AnimatedPeekingBoyState extends State<AnimatedPeekingBoy>
+    with TickerProviderStateMixin {
+  late AnimationController _swayController;
+  late AnimationController _blinkController;
+  late Animation<double> _swayAnimation;
+  late Animation<double> _headTiltAnimation;
+  late Animation<double> _blinkAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    // 1. Hair / Head Sway Breathing Animation (Soft natural floating movement)
+    _swayController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2400),
+    )..repeat(reverse: true);
+
+    _swayAnimation = Tween<double>(begin: 0.0, end: -3.5).animate(
+      CurvedAnimation(parent: _swayController, curve: Curves.easeInOutSine),
+    );
+
+    _headTiltAnimation = Tween<double>(begin: -0.02, end: 0.02).animate(
+      CurvedAnimation(parent: _swayController, curve: Curves.easeInOutSine),
+    );
+
+    // 2. Eye Blinking Timer & Animation (Blinks every 3.2 seconds)
+    _blinkController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 160),
+    );
+
+    _blinkAnimation = Tween<double>(begin: 1.0, end: 0.05).animate(
+      CurvedAnimation(parent: _blinkController, curve: Curves.easeInOut),
+    );
+
+    _startBlinkLoop();
+  }
+
+  void _startBlinkLoop() async {
+    while (mounted) {
+      await Future.delayed(Duration(milliseconds: 2600 + (DateTime.now().millisecond % 1400)));
+      if (mounted) {
+        await _blinkController.forward();
+        await _blinkController.reverse();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _swayController.dispose();
+    _blinkController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_swayController, _blinkController]),
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _swayAnimation.value),
+          child: Transform.rotate(
+            angle: _headTiltAnimation.value,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Base Boy Illustration with cheerful smiling expression
+                Image.asset(
+                  "assets/student_peeking.png",
+                  height: widget.height,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const SizedBox(),
+                ),
+
+                // Eye Blinking Overlay Layer (Natural eyelid blink)
+                Positioned(
+                  top: widget.height * 0.27,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 90),
+                    opacity: 1.0 - _blinkAnimation.value,
+                    child: Container(
+                      width: widget.height * 0.38,
+                      height: widget.height * 0.06,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF5D4037), // Natural eyelid tone
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
