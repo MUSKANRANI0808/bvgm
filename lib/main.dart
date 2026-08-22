@@ -1486,38 +1486,34 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ],
                 ),
-                child: Column(
-                  children: [
-                    // 📌 STICKY / FIXED TOP HEADER BAR (DYNAMIC SLIDER GRADIENT)
-                    MasterpieceHeaderBar(
-                      roleName: roleName,
-                      onLogout: widget.onLogout,
-                      gradientColors: _activeHeaderGradient,
-                      accentColor: _activeHeaderAccent,
+                child: CustomScrollView(
+                  slivers: [
+                    // 📌 PINNED SLIVER BANNER (HEADER + SLIDER INTEGRATED SINGLE CARD)
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _MasterpieceBannerHeaderDelegate(
+                        roleName: roleName,
+                        onLogout: widget.onLogout,
+                        activeGradient: _activeHeaderGradient,
+                        activeAccent: _activeHeaderAccent,
+                        onStoryChanged: (gradient, accent) {
+                          if (mounted) {
+                            setState(() {
+                              _activeHeaderGradient = gradient;
+                              _activeHeaderAccent = accent;
+                            });
+                          }
+                        },
+                      ),
                     ),
 
                     // 📜 SCROLLABLE DASHBOARD BODY
-                    Expanded(
-                      child: ListView(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 120),
-                        children: [
-                          MasterpieceStudentBanner(
-                            roleName: roleName,
-                            onLogout: null,
-                            onStoryChanged: (gradient, accent) {
-                              if (mounted) {
-                                setState(() {
-                                  _activeHeaderGradient = gradient;
-                                  _activeHeaderAccent = accent;
-                                });
-                              }
-                            },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                           const SizedBox(height: 14),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1925,15 +1921,12 @@ class _DashboardPageState extends State<DashboardPage> {
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
+      ),
     ),
   ),
-),
-),
-),
 );
   }
 
@@ -2450,153 +2443,72 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
-class MasterpieceHeaderBar extends StatelessWidget {
+class _MasterpieceBannerHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String roleName;
   final Future<void> Function()? onLogout;
-  final List<Color> gradientColors;
-  final Color accentColor;
+  final List<Color> activeGradient;
+  final Color activeAccent;
+  final Function(List<Color> gradient, Color accent) onStoryChanged;
 
-  const MasterpieceHeaderBar({
-    super.key,
+  _MasterpieceBannerHeaderDelegate({
     required this.roleName,
     this.onLogout,
-    this.gradientColors = const [
-      Color(0xFF0F172A),
-      Color(0xFF0369A1),
-      Color(0xFF0284C7),
-    ],
-    this.accentColor = const Color(0xFF38BDF8),
+    required this.activeGradient,
+    required this.activeAccent,
+    required this.onStoryChanged,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-      padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+  double get minExtent => 68.0;
+
+  @override
+  double get maxExtent => 250.0;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: gradientColors,
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // 🎨 LOGO WITH GLOW BORDER
-          Container(
-            height: 38,
-            width: 38,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(11),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-              border: Border.all(
-                color: Colors.white.withOpacity(0.8),
-                width: 1.2,
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                "assets/logo.png",
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(
-                  Icons.school_rounded,
-                  color: AppColors.primary,
-                  size: 22,
-                ),
-              ),
-            ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
+        boxShadow: [
+          BoxShadow(
+            color: activeGradient.first.withOpacity(0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
-          const SizedBox(width: 10),
-
-          // 🏷️ SCHOOL NAME & ROLE DASHBOARD
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 👨‍💼 ROLE DASHBOARD PILL
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 1.5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.18),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.white.withOpacity(0.25)),
-                  ),
-                  child: Text(
-                    '${roleName} Dashboard'.toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                // 🏫 SCHOOL NAME
-                const Text(
-                  'BAL VIKASH GYAN MANDIR',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: 0.1,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 500),
-                  style: TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w900,
-                    color: accentColor,
-                    letterSpacing: 0.8,
-                  ),
-                  child: const Text('RANIGANJ'),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(width: 6),
-
-          // 🔘 ACTION BUTTON (LOGOUT)
-          if (onLogout != null)
-            InkWell(
-              borderRadius: BorderRadius.circular(10),
-              onTap: onLogout,
-              child: Container(
-                height: 36,
-                width: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.18),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.white.withOpacity(0.25)),
-                ),
-                child: const Icon(
-                  Icons.logout_rounded,
-                  color: Colors.white,
-                  size: 18,
-                ),
-              ),
-            ),
         ],
       ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: activeGradient,
+            ),
+          ),
+          child: OverflowBox(
+            minHeight: maxExtent,
+            maxHeight: maxExtent,
+            alignment: Alignment.topCenter,
+            child: MasterpieceStudentBanner(
+              roleName: roleName,
+              onLogout: onLogout,
+              onStoryChanged: onStoryChanged,
+            ),
+          ),
+        ),
+      ),
     );
+  }
+
+  @override
+  bool shouldRebuild(covariant _MasterpieceBannerHeaderDelegate oldDelegate) {
+    return oldDelegate.roleName != roleName ||
+        oldDelegate.activeGradient != activeGradient ||
+        oldDelegate.activeAccent != activeAccent;
   }
 }
 
@@ -2730,38 +2642,21 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
 
   @override
   Widget build(BuildContext context) {
-    final double topInset = MediaQuery.of(context).padding.top;
-    final bool isCompact = widget.onLogout == null;
-    final double totalHeight = isCompact ? 172.0 : (245.0 + topInset);
-
-    return Container(
-      height: totalHeight,
-      margin: EdgeInsets.zero,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0xFF0F172A),
-            blurRadius: 18,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
-        child: PageView.builder(
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-            if (widget.onStoryChanged != null) {
-              widget.onStoryChanged!(
-                _bannerStories[index]["gradient"] as List<Color>,
-                _bannerStories[index]["accent"] as Color,
-              );
-            }
-          },
+    return SizedBox(
+      height: 250.0,
+      child: PageView.builder(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+          if (widget.onStoryChanged != null) {
+            widget.onStoryChanged!(
+              _bannerStories[index]["gradient"] as List<Color>,
+              _bannerStories[index]["accent"] as Color,
+            );
+          }
+        },
           itemCount: _bannerStories.length,
           itemBuilder: (context, index) {
             final story = _bannerStories[index];
@@ -2777,13 +2672,7 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
               ]),
               builder: (context, child) {
                 return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: bgColors,
-                    ),
-                  ),
+                  color: Colors.transparent,
                   child: Stack(
                     children: [
                       // 1. ANIMATED BACKGROUND PULSING AMBIENT ORB
