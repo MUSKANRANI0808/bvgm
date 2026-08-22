@@ -8144,8 +8144,9 @@ class _AdminAttendanceReportPageState extends State<AdminAttendanceReportPage> {
       ),
       body: _isLoadingStudents
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(14),
+          : SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 40),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -8672,10 +8673,12 @@ class _AdminAttendanceReportPageState extends State<AdminAttendanceReportPage> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 35),
                   ],
                 ],
               ),
             ),
+          );
     );
   }
 }
