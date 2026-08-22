@@ -638,7 +638,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             },
           ),
 
-          // 🔷 2. MAIN LOGIN FORM SHEET CARD
+          // 🔷 2. MAIN LOGIN FORM SHEET CARD WITH PEEKING STUDENT BOY
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.only(top: 195, left: 12, right: 12, bottom: 20),
@@ -646,23 +646,28 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 opacity: _fadeAnimation,
                 child: SlideTransition(
                   position: _slideAnimation,
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF1E3A8A).withOpacity(0.10),
-                          blurRadius: 28,
-                          offset: const Offset(0, 10),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // 🔷 WHITE CARD CONTAINER
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(top: 35),
+                        padding: const EdgeInsets.only(top: 28, left: 10, right: 10, bottom: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF1E3A8A).withOpacity(0.10),
+                              blurRadius: 28,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
                         // Card Header
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 4),
@@ -882,13 +887,34 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-                ),
+
+                  // 🔷 PEEKING STUDENT BOY ILLUSTRATION OVER TOP EDGE OF WHITE CARD
+                  Positioned(
+                    top: -38,
+                    right: 28,
+                    child: Container(
+                      height: 76,
+                      width: 90,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          "assets/student_peeking.png",
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const SizedBox(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-        ],
-      ),
-    );
+        ),
+      ],
+    ),
+  );
   }
 
   Widget buildField({
