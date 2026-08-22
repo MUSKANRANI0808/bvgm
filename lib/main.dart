@@ -1146,6 +1146,13 @@ class _DashboardPageState extends State<DashboardPage> {
   late PageController _controller;
   int _current = 0;
 
+  List<Color> _activeHeaderGradient = const [
+    Color(0xFF0F172A),
+    Color(0xFF0369A1),
+    Color(0xFF0284C7),
+  ];
+  Color _activeHeaderAccent = const Color(0xFF38BDF8);
+
   Color getIconBgColor(String title) {
     switch (title) {
     // 🔷 OVERVIEW
@@ -1481,10 +1488,12 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 child: Column(
                   children: [
-                    // 📌 STICKY / FIXED TOP HEADER BAR
+                    // 📌 STICKY / FIXED TOP HEADER BAR (DYNAMIC SLIDER GRADIENT)
                     MasterpieceHeaderBar(
                       roleName: roleName,
                       onLogout: widget.onLogout,
+                      gradientColors: _activeHeaderGradient,
+                      accentColor: _activeHeaderAccent,
                     ),
 
                     // 📜 SCROLLABLE DASHBOARD BODY
@@ -1495,6 +1504,14 @@ class _DashboardPageState extends State<DashboardPage> {
                           MasterpieceStudentBanner(
                             roleName: roleName,
                             onLogout: null,
+                            onStoryChanged: (gradient, accent) {
+                              if (mounted) {
+                                setState(() {
+                                  _activeHeaderGradient = gradient;
+                                  _activeHeaderAccent = accent;
+                                });
+                              }
+                            },
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -2436,35 +2453,33 @@ class _DashboardPageState extends State<DashboardPage> {
 class MasterpieceHeaderBar extends StatelessWidget {
   final String roleName;
   final Future<void> Function()? onLogout;
+  final List<Color> gradientColors;
+  final Color accentColor;
 
   const MasterpieceHeaderBar({
     super.key,
     required this.roleName,
     this.onLogout,
+    this.gradientColors = const [
+      Color(0xFF0F172A),
+      Color(0xFF0369A1),
+      Color(0xFF0284C7),
+    ],
+    this.accentColor = const Color(0xFF38BDF8),
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
       padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0F172A),
-            Color(0xFF1E293B),
-            Color(0xFF0369A1),
-          ],
+          colors: gradientColors,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -2543,14 +2558,15 @@ class MasterpieceHeaderBar extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const Text(
-                  'RANIGANJ',
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 500),
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF38BDF8),
+                    color: accentColor,
                     letterSpacing: 0.8,
                   ),
+                  child: const Text('RANIGANJ'),
                 ),
               ],
             ),
@@ -2587,11 +2603,13 @@ class MasterpieceHeaderBar extends StatelessWidget {
 class MasterpieceStudentBanner extends StatefulWidget {
   final String roleName;
   final VoidCallback? onLogout;
+  final Function(List<Color> gradient, Color accent)? onStoryChanged;
 
   const MasterpieceStudentBanner({
     super.key,
     this.roleName = 'Student',
     this.onLogout,
+    this.onStoryChanged,
   });
 
   @override
@@ -2737,6 +2755,12 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
             setState(() {
               _currentIndex = index;
             });
+            if (widget.onStoryChanged != null) {
+              widget.onStoryChanged!(
+                _bannerStories[index]["gradient"] as List<Color>,
+                _bannerStories[index]["accent"] as Color,
+              );
+            }
           },
           itemCount: _bannerStories.length,
           itemBuilder: (context, index) {
