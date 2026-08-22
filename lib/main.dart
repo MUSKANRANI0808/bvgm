@@ -2872,29 +2872,11 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
                                       child: Stack(
                                         alignment: Alignment.center,
                                         children: [
-                                          // Main Companion Graphic Card
-                                          Container(
-                                            width: 88,
-                                            height: 105,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.15),
-                                              borderRadius: BorderRadius.circular(20),
-                                              border: Border.all(color: Colors.white.withOpacity(0.3)),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black.withOpacity(0.15),
-                                                  blurRadius: 10,
-                                                  offset: const Offset(0, 5),
-                                                ),
-                                              ],
-                                            ),
-                                            child: Center(
-                                              child: Icon(
-                                                story["mainIcon"] as IconData,
-                                                color: Colors.white,
-                                                size: 46,
-                                              ),
-                                            ),
+                                          // Main Companion Graphic Card (Live Video Animation Effect)
+                                          AnimatedStoryVideoGraphic(
+                                            storyIndex: index,
+                                            mainIcon: story["mainIcon"] as IconData,
+                                            accentColor: accentColor,
                                           ),
 
                                           // Floating Item Badge 1 (Top Right Avatar)
@@ -2987,6 +2969,285 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
           },
         ),
       ),
+    );
+  }
+}
+
+class AnimatedStoryVideoGraphic extends StatefulWidget {
+  final int storyIndex;
+  final IconData mainIcon;
+  final Color accentColor;
+
+  const AnimatedStoryVideoGraphic({
+    super.key,
+    required this.storyIndex,
+    required this.mainIcon,
+    required this.accentColor,
+  });
+
+  @override
+  State<AnimatedStoryVideoGraphic> createState() => _AnimatedStoryVideoGraphicState();
+}
+
+class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
+    with TickerProviderStateMixin {
+  late AnimationController _spinController;
+  late AnimationController _pulseController;
+  late AnimationController _driveController;
+
+  @override
+  void initState() {
+    super.initState();
+    _spinController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+
+    _driveController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _spinController.dispose();
+    _pulseController.dispose();
+    _driveController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_spinController, _pulseController, _driveController]),
+      builder: (context, child) {
+        final spinVal = _spinController.value * 2 * pi;
+        final pulseVal = 0.95 + (_pulseController.value * 0.12);
+        final driveVal = _driveController.value;
+
+        return Container(
+          width: 90,
+          height: 108,
+          decoration: BoxDecoration(
+            color: const Color(0xFF0F172A).withOpacity(0.4),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: widget.accentColor.withOpacity(0.5), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: widget.accentColor.withOpacity(0.25),
+                blurRadius: 14,
+                spreadRadius: 1,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              // 1. ROTATING SCI-FI RADAR / VIDEO GLOW RING IN BACKGROUND
+              Transform.rotate(
+                angle: spinVal,
+                child: Container(
+                  width: 68,
+                  height: 68,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: widget.accentColor.withOpacity(0.4),
+                      width: 1.8,
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 2,
+                        left: 28,
+                        child: Container(
+                          width: 7,
+                          height: 7,
+                          decoration: BoxDecoration(
+                            color: widget.accentColor,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: widget.accentColor,
+                                blurRadius: 6,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // 2. STORY SPECIFIC VIDEO ANIMATION CONTENT
+              if (widget.storyIndex == 0) ...[
+                // 🚌 BUS JOURNEY ANIMATION VIDEO EFFECT
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Transform.translate(
+                      offset: Offset(0, sin(driveVal * 2 * pi) * 2.5),
+                      child: Transform.scale(
+                        scale: pulseVal,
+                        child: Icon(
+                          widget.mainIcon,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    // Moving Road Lines Effect
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        width: 50,
+                        height: 3,
+                        color: Colors.white24,
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              left: (driveVal * 50) - 16,
+                              child: Container(
+                                width: 16,
+                                height: 3,
+                                color: widget.accentColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ] else if (widget.storyIndex == 1) ...[
+                // 💻 BOOKS & LAPTOP ANIMATION VIDEO EFFECT
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Transform.scale(
+                      scale: pulseVal,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            widget.mainIcon,
+                            color: Colors.white,
+                            size: 42,
+                          ),
+                          Positioned(
+                            top: 13,
+                            child: Container(
+                              width: 18,
+                              height: 9,
+                              decoration: BoxDecoration(
+                                color: widget.accentColor.withOpacity(0.35),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                              child: Center(
+                                child: Container(
+                                  width: 12,
+                                  height: 2,
+                                  color: Colors.white.withOpacity(0.85),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(4, (i) {
+                        final h = 3.0 + sin((driveVal * 2 * pi) + i) * 3;
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                          width: 3,
+                          height: h.clamp(2.0, 8.0),
+                          decoration: BoxDecoration(
+                            color: widget.accentColor,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                // 🎓 TROPHY / SUCCESS ANIMATION VIDEO EFFECT
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Transform.rotate(
+                      angle: -spinVal * 0.5,
+                      child: Icon(
+                        Icons.brightness_5_rounded,
+                        color: widget.accentColor.withOpacity(0.35),
+                        size: 60,
+                      ),
+                    ),
+                    Transform.scale(
+                      scale: pulseVal,
+                      child: Icon(
+                        widget.mainIcon,
+                        color: const Color(0xFFFFD700),
+                        size: 42,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+
+              // 3. TOP-LEFT LIVE VIDEO BADGE OVERLAY ("▶ LIVE")
+              Positioned(
+                top: 4,
+                left: 5,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.5, vertical: 1.5),
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent,
+                    borderRadius: BorderRadius.circular(7),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.redAccent.withOpacity(0.4),
+                        blurRadius: 5,
+                      )
+                    ],
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.play_arrow_rounded, color: Colors.white, size: 9),
+                      SizedBox(width: 1),
+                      Text(
+                        "LIVE",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 7.5,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
