@@ -758,7 +758,7 @@ class _HomeShellState extends State<HomeShell> {
       case UserRole.teacher:
         return ['Home', 'Attendance', 'Homework', 'Notices', 'Profile'];
       case UserRole.student:
-        return ['Home', 'Study', 'Results', 'Notices', 'Profile'];
+        return ['Home', 'Fees', 'Results', 'Notices', 'Profile'];
     }
   }
 
@@ -767,7 +767,9 @@ class _HomeShellState extends State<HomeShell> {
       case 0:
         return Icons.home_rounded;
       case 1:
-        return Icons.assignment_rounded;
+        return widget.role == UserRole.student
+            ? Icons.account_balance_wallet_rounded
+            : Icons.assignment_rounded;
       case 2:
         return Icons.add_circle_rounded;
       case 3:
@@ -793,7 +795,12 @@ class _HomeShellState extends State<HomeShell> {
     final isDesktop = MediaQuery.of(context).size.width > 900;
     final pages = [
       DashboardPage(role: widget.role, onLogout: _logout),
-      SecondPage(role: widget.role, title: tabs[1]),
+      widget.role == UserRole.student
+          ? StudentFeeHistoryPage(
+              studentId: UserSession.currentUserId ?? "",
+              studentName: "Fee Statement",
+            )
+          : SecondPage(role: widget.role, title: tabs[1]),
       ThirdPage(role: widget.role, title: tabs[2]),
       NoticesPage(role: widget.role),
       ProfilePage(role: widget.role),
@@ -6937,7 +6944,6 @@ class AttendancePainter extends CustomPainter {
     // 🔵 Present (Solid Dark Blue)
     paint.color = const Color(0xff1e3a8a);
     canvas.drawArc(rect, startAngle, presentAngle, false, paint);
-
     // 🔴 Absent (Clear Light Red)
     paint.color = const Color(0xffff4d4f);
     canvas.drawArc(rect, startAngle + presentAngle, absentAngle, false, paint);
@@ -6962,117 +6968,313 @@ Widget attendanceCard({
   required int selectedYear,
   required int selectedMonth,
 }) {
-  final uid = UserSession.currentUserId ?? "";
+  return StudentAttendanceStatCard(
+    isPresent: isPresent,
+    selectedYear: selectedYear,
+    selectedMonth: selectedMonth,
+  );
+}
 
-  return StreamBuilder(
-    stream: UserSession.yearColl('attendance')
-        .where('studentId', isEqualTo: uid) // 🔥 USER FILTER
-        .snapshots(),
-    builder: (context, snap) {
-      int present = 0;
-      int absent = 0;
+class StudentAttendanceStatCard extends StatefulWidget {
+  final bool isPresent;
+  final int selectedYear;
+  final int selectedMonth;
 
-      if (snap.hasData) {
-        for (var d in snap.data!.docs) {
-          final data = d.data() as Map<String, dynamic>;
+  const StudentAttendanceStatCard({
+    super.key,
+    required this.isPresent,
+    required this.selectedYear,
+    required this.selectedMonth,
+  });
 
-          DateTime date = (data['date'] as Timestamp).toDate();
+  @override
+  State<StudentAttendanceStatCard> createState() => _StudentAttendanceStatCardState();
+}
 
-          // 🔥 YEAR + MONTH FILTER
-          if (date.year == selectedYear && date.month == selectedMonth) {
-            if (data['status'] == "P") present++;
-            if (data['status'] == "A") absent++;
+class _StudentAttendanceStatCardState extends State<StudentAttendanceStatCard> {
+  @override
+  Widget build(BuildContext context) {
+    final uid = UserSession.currentUserId ?? "";
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: UserSession.yearColl('attendance')
+          .where('studentId', isEqualTo: uid)
+          .snapshots(),
+      builder: (context, snap) {
+        int present = 0;
+        int absent = 0;
+
+        if (snap.hasData) {
+          for (var d in snap.data!.docs) {
+            final data = d.data() as Map<String, dynamic>;
+            DateTime date = (data['date'] as Timestamp).toDate();
+
+            if (date.year == widget.selectedYear && date.month == widget.selectedMonth) {
+              if (data['status'] == "P") present++;
+              if (data['status'] == "A") absent++;
+            }
           }
         }
-      }
 
-      // 🔥 SELECTED MONTH DAYS
-      int totalDays = DateTime(selectedYear, selectedMonth + 1, 0).day;
+        int totalDays = DateTime(widget.selectedYear, widget.selectedMonth + 1, 0).day;
+        int count = widget.isPresent ? present : absent;
+        double percent = (count / totalDays).clamp(0.0, 1.0);
 
-      double percent = isPresent ? present / totalDays : absent / totalDays;
+        final Color mainColor = widget.isPresent ? const Color(0xFF059669) : const Color(0xFFE11D48);
+        final Color cardBgTop = widget.isPresent ? const Color(0xFFECFDF5) : const Color(0xFFFFF1F2);
+        final Color cardBgBottom = widget.isPresent ? const Color(0xFFD1FAE5) : const Color(0xFFFFE4E6);
+        final Color borderColor = widget.isPresent ? const Color(0xFFA7F3D0) : const Color(0xFFFECDD3);
 
-      percent = percent.clamp(0, 1);
-
-      Color color = isPresent ? Colors.green : Colors.red;
-
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(24),
           child: Container(
-            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               gradient: LinearGradient(
-                colors: isPresent
-                    ? [
-                  Colors.green.withOpacity(0.15),
-                  Colors.green.withOpacity(0.05),
-                ]
-                    : [
-                  Colors.red.withOpacity(0.15),
-                  Colors.red.withOpacity(0.05),
-                ],
+                colors: [cardBgTop, cardBgBottom],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              border: Border.all(
-                color: isPresent
-                    ? Colors.green.withOpacity(0.25)
-                    : Colors.red.withOpacity(0.25),
-              ),
+              border: Border.all(color: borderColor, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: color.withOpacity(0.12),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
+                  color: mainColor.withOpacity(0.12),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
-            child: Center(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  TweenAnimationBuilder(
-                    tween: Tween<double>(begin: 0, end: 1),
-                    duration: const Duration(seconds: 2),
-                    builder: (context, value, child) {
-                      return Transform.rotate(
-                        angle: value * 6.3, // 🔁 full rotation
-                        child: child,
-                      );
-                    },
-                    onEnd: () {
-                      (context as Element).markNeedsBuild(); // 🔁 repeat
-                    },
-                    child: SizedBox(
-                      height: 85,
-                      width: 85,
-                      child: CircularProgressIndicator(
-                        value: percent,
-                        strokeWidth: 3,
-                        backgroundColor: Colors.white.withOpacity(0.6),
-                        valueColor: AlwaysStoppedAnimation(color),
+            child: Stack(
+              children: [
+                // 🎨 TOP-LEFT CORNER ATTACHED BADGE
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: mainColor.withOpacity(0.15),
+                      borderRadius: const BorderRadius.only(
+                        bottomRight: Radius.circular(16),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          widget.isPresent ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                          color: mainColor,
+                          size: 13,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.isPresent ? "PRESENT" : "ABSENT",
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            color: mainColor,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // 🔄 ANIMATED ROTATING CIRCLE IN CENTER
+                Positioned.fill(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Center(
+                      child: AnimatedAttendanceCircle(
+                        percent: percent,
+                        isPresent: widget.isPresent,
+                        count: count,
                       ),
                     ),
                   ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class AnimatedAttendanceCircle extends StatefulWidget {
+  final double percent;
+  final bool isPresent;
+  final int count;
+
+  const AnimatedAttendanceCircle({
+    super.key,
+    required this.percent,
+    required this.isPresent,
+    required this.count,
+  });
+
+  @override
+  State<AnimatedAttendanceCircle> createState() => _AnimatedAttendanceCircleState();
+}
+
+class _AnimatedAttendanceCircleState extends State<AnimatedAttendanceCircle>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _rotationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _rotationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Color mainColor = widget.isPresent ? const Color(0xFF059669) : const Color(0xFFE11D48);
+    final Color glowColor = widget.isPresent ? const Color(0xFF10B981) : const Color(0xFFF43F5E);
+
+    return AnimatedBuilder(
+      animation: _rotationController,
+      builder: (context, child) {
+        return CustomPaint(
+          size: const Size(86, 86),
+          painter: AttendanceCirclePainter(
+            percent: widget.percent,
+            rotationAngle: _rotationController.value * 2 * pi,
+            mainColor: mainColor,
+            glowColor: glowColor,
+            isPresent: widget.isPresent,
+          ),
+          child: SizedBox(
+            height: 86,
+            width: 86,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                   Text(
-                    "${(percent * 100).toStringAsFixed(0)}%",
+                    "${(widget.percent * 100).toStringAsFixed(0)}%",
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 18,
-                      letterSpacing: 1,
-                      color: color,
+                      fontSize: 20,
+                      color: mainColor,
+                      letterSpacing: 0.5,
+                      shadows: [
+                        Shadow(
+                          color: mainColor.withOpacity(0.35),
+                          blurRadius: 6,
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 1),
+                  Text(
+                    "${widget.count} Days",
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w800,
+                      color: mainColor.withOpacity(0.85),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-        ),
+        );
+      },
+    );
+  }
+}
+
+class AttendanceCirclePainter extends CustomPainter {
+  final double percent;
+  final double rotationAngle;
+  final Color mainColor;
+  final Color glowColor;
+  final bool isPresent;
+
+  AttendanceCirclePainter({
+    required this.percent,
+    required this.rotationAngle,
+    required this.mainColor,
+    required this.glowColor,
+    required this.isPresent,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width / 2) - 6;
+
+    // 1. Background Track Circle
+    final trackPaint = Paint()
+      ..color = mainColor.withOpacity(0.15)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5;
+    canvas.drawCircle(center, radius, trackPaint);
+
+    // 2. Continuous Rotating Outer Sci-Fi Ring Arc (Hamesa ghumta rahe)
+    final outerRingPaint = Paint()
+      ..color = glowColor.withOpacity(0.75)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 2.5;
+
+    // Rotating 90-degree outer laser arc
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius + 4),
+      rotationAngle,
+      pi / 2,
+      false,
+      outerRingPaint,
+    );
+
+    // Second counter-balancing dot arc
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius + 4),
+      rotationAngle + pi,
+      pi / 4,
+      false,
+      outerRingPaint..color = mainColor.withOpacity(0.45),
+    );
+
+    // 3. Main Progress Arc (Actual Attendance %)
+    if (percent > 0) {
+      final progressPaint = Paint()
+        ..shader = SweepGradient(
+          colors: [glowColor.withOpacity(0.6), mainColor],
+          startAngle: -pi / 2,
+          endAngle: -pi / 2 + (2 * pi * percent),
+        ).createShader(Rect.fromCircle(center: center, radius: radius))
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.round
+        ..strokeWidth = 6.5;
+
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        -pi / 2,
+        2 * pi * percent,
+        false,
+        progressPaint,
       );
-    },
-  );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant AttendanceCirclePainter oldDelegate) {
+    return oldDelegate.rotationAngle != rotationAngle ||
+        oldDelegate.percent != percent;
+  }
 }
 
 class FeesPage extends StatefulWidget {
@@ -14241,6 +14443,7 @@ class StudentFeeHistoryPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
+        automaticallyImplyLeading: ModalRoute.of(context)?.canPop ?? false,
         title: Text(
           studentName,
           style: const TextStyle(
