@@ -1685,8 +1685,23 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   int selectedYear = DateTime.now().year;
   int selectedMonth = DateTime.now().month;
+  DateTime selectedDate = DateTime.now();
+  String attendanceFilterMode = "Day"; // "Day" or "Month"
   late PageController _controller;
   int _current = 0;
+
+  String _getMonthAbbr(int month) {
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    if (month >= 1 && month <= 12) return months[month - 1];
+    return "";
+  }
+
+  bool isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
 
   List<Color> _activeHeaderGradient = const [
     Color(0xFF0F172A),
@@ -1904,6 +1919,8 @@ class _DashboardPageState extends State<DashboardPage> {
     switch (widget.role) {
       case UserRole.admin:
         return [
+          {'title': 'Present', 'value': '', 'icon': Icons.check_circle},
+          {'title': 'Absent', 'value': '', 'icon': Icons.cancel},
           {
             'title': 'Students',
             'value': 'LIVE',
@@ -2070,11 +2087,113 @@ class _DashboardPageState extends State<DashboardPage> {
                                   color: AppColors.text,
                                 ),
                               ),
-                              if (widget.role == UserRole.student)
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    // YEAR
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // 🔷 FILTER MODE DROPDOWN (Day Wise vs Month Wise) FOR ADMIN & TEACHER
+                                  if (widget.role != UserRole.student) ...[
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 0),
+                                      height: 36,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.9),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: Colors.grey.shade300),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.04),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 3),
+                                          )
+                                        ],
+                                      ),
+                                      child: DropdownButton<String>(
+                                        value: attendanceFilterMode,
+                                        underline: const SizedBox(),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF0284C7),
+                                        ),
+                                        icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                                            size: 16, color: Color(0xFF0284C7)),
+                                        items: const [
+                                          DropdownMenuItem(
+                                              value: "Day",
+                                              child: Text("Day Wise")),
+                                          DropdownMenuItem(
+                                              value: "Month",
+                                              child: Text("Month Wise")),
+                                        ],
+                                        onChanged: (v) {
+                                          if (v != null) {
+                                            setState(() {
+                                              attendanceFilterMode = v;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                  ],
+
+                                  // 📅 DAY WISE: DATE PICKER BUTTON PILL
+                                  if (widget.role != UserRole.student && attendanceFilterMode == "Day") ...[
+                                    InkWell(
+                                      borderRadius: BorderRadius.circular(12),
+                                      onTap: () async {
+                                        final picked = await showDatePicker(
+                                          context: context,
+                                          initialDate: selectedDate,
+                                          firstDate: DateTime(2023),
+                                          lastDate: DateTime(2030),
+                                        );
+                                        if (picked != null) {
+                                          setState(() {
+                                            selectedDate = picked;
+                                            selectedYear = picked.year;
+                                            selectedMonth = picked.month;
+                                          });
+                                        }
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 0),
+                                        height: 36,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.9),
+                                          borderRadius: BorderRadius.circular(12),
+                                          border: Border.all(color: Colors.grey.shade300),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(0.04),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 3),
+                                            )
+                                          ],
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.calendar_today_rounded,
+                                                size: 14, color: Color(0xFF0284C7)),
+                                            const SizedBox(width: 5),
+                                            Text(
+                                              isSameDay(selectedDate, DateTime.now())
+                                                  ? "Today (${selectedDate.day} ${_getMonthAbbr(selectedDate.month)})"
+                                                  : "${selectedDate.day} ${_getMonthAbbr(selectedDate.month)} ${selectedDate.year}",
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ] else ...[
+                                    // 🗓️ MONTH WISE (OR STUDENT): YEAR & MONTH DROPDOWNS
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 0),
@@ -2109,16 +2228,18 @@ class _DashboardPageState extends State<DashboardPage> {
                                           );
                                         }),
                                         onChanged: (v) {
-                                          setState(() {
-                                            selectedYear = v!;
-                                          });
+                                          if (v != null) {
+                                            setState(() {
+                                              selectedYear = v;
+                                            });
+                                          }
                                         },
                                       ),
                                     ),
 
-                                    const SizedBox(width: 8),
+                                    const SizedBox(width: 6),
 
-                                    // MONTH
+                                    // MONTH DROPDOWN
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 0),
@@ -2147,18 +2268,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                             size: 16),
                                         items: List.generate(12, (i) {
                                           List<String> months = [
-                                            "Jan",
-                                            "Feb",
-                                            "Mar",
-                                            "Apr",
-                                            "May",
-                                            "Jun",
-                                            "Jul",
-                                            "Aug",
-                                            "Sep",
-                                            "Oct",
-                                            "Nov",
-                                            "Dec"
+                                            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
                                           ];
                                           return DropdownMenuItem(
                                             value: i + 1,
@@ -2166,14 +2277,17 @@ class _DashboardPageState extends State<DashboardPage> {
                                           );
                                         }),
                                         onChanged: (v) {
-                                          setState(() {
-                                            selectedMonth = v!;
-                                          });
+                                          if (v != null) {
+                                            setState(() {
+                                              selectedMonth = v;
+                                            });
+                                          }
                                         },
                                       ),
                                     ),
                                   ],
-                                ),
+                                ],
+                              ),
                             ],
                           ),
                           const SizedBox(height: 8),
@@ -2625,6 +2739,9 @@ class _DashboardPageState extends State<DashboardPage> {
         isPresent: true,
         selectedYear: selectedYear,
         selectedMonth: selectedMonth,
+        selectedDate: selectedDate,
+        filterMode: attendanceFilterMode,
+        role: widget.role,
       );
     }
 
@@ -2633,6 +2750,9 @@ class _DashboardPageState extends State<DashboardPage> {
         isPresent: false,
         selectedYear: selectedYear,
         selectedMonth: selectedMonth,
+        selectedDate: selectedDate,
+        filterMode: attendanceFilterMode,
+        role: widget.role,
       );
     }
 
@@ -7861,11 +7981,17 @@ Widget attendanceCard({
   required bool isPresent,
   required int selectedYear,
   required int selectedMonth,
+  DateTime? selectedDate,
+  String filterMode = "Month",
+  UserRole role = UserRole.student,
 }) {
   return StudentAttendanceStatCard(
     isPresent: isPresent,
     selectedYear: selectedYear,
     selectedMonth: selectedMonth,
+    selectedDate: selectedDate,
+    filterMode: filterMode,
+    role: role,
   );
 }
 
@@ -7873,12 +7999,18 @@ class StudentAttendanceStatCard extends StatefulWidget {
   final bool isPresent;
   final int selectedYear;
   final int selectedMonth;
+  final DateTime? selectedDate;
+  final String filterMode;
+  final UserRole role;
 
   const StudentAttendanceStatCard({
     super.key,
     required this.isPresent,
     required this.selectedYear,
     required this.selectedMonth,
+    this.selectedDate,
+    this.filterMode = "Month",
+    this.role = UserRole.student,
   });
 
   @override
@@ -7888,6 +8020,70 @@ class StudentAttendanceStatCard extends StatefulWidget {
 class _StudentAttendanceStatCardState extends State<StudentAttendanceStatCard> {
   @override
   Widget build(BuildContext context) {
+    if (widget.role == UserRole.admin || widget.role == UserRole.teacher) {
+      return StreamBuilder<QuerySnapshot>(
+        stream: UserSession.yearColl('students').snapshots(),
+        builder: (context, studentSnap) {
+          final totalStudents = studentSnap.hasData ? studentSnap.data!.docs.length : 0;
+
+          return StreamBuilder<QuerySnapshot>(
+            stream: UserSession.yearColl('attendance').snapshots(),
+            builder: (context, attSnap) {
+              int present = 0;
+              int absent = 0;
+
+              if (attSnap.hasData) {
+                final targetDate = widget.selectedDate ?? DateTime.now();
+                final targetDateId = "${targetDate.day}-${targetDate.month}-${targetDate.year}";
+
+                for (var d in attSnap.data!.docs) {
+                  final data = d.data() as Map<String, dynamic>;
+                  final dateId = (data['dateId'] ?? "").toString();
+
+                  if (widget.filterMode == "Day") {
+                    bool matchesDate = dateId == targetDateId;
+                    if (!matchesDate && data['date'] is Timestamp) {
+                      DateTime dt = (data['date'] as Timestamp).toDate();
+                      matchesDate = dt.year == targetDate.year &&
+                          dt.month == targetDate.month &&
+                          dt.day == targetDate.day;
+                    }
+                    if (matchesDate) {
+                      if (data['status'] == "P") present++;
+                      if (data['status'] == "A") absent++;
+                    }
+                  } else {
+                    if (data['date'] is Timestamp) {
+                      DateTime dt = (data['date'] as Timestamp).toDate();
+                      if (dt.year == widget.selectedYear && dt.month == widget.selectedMonth) {
+                        if (data['status'] == "P") present++;
+                        if (data['status'] == "A") absent++;
+                      }
+                    }
+                  }
+                }
+              }
+
+              int count = widget.isPresent ? present : absent;
+              double percent = 0.0;
+              String subLabel = "";
+
+              if (widget.filterMode == "Day") {
+                percent = totalStudents > 0 ? (count / totalStudents).clamp(0.0, 1.0) : 0.0;
+                subLabel = "$count Students";
+              } else {
+                int expectedTotal = totalStudents > 0 ? totalStudents : (present + absent > 0 ? present + absent : 1);
+                percent = expectedTotal > 0 ? (count / expectedTotal).clamp(0.0, 1.0) : 0.0;
+                subLabel = "$count Records";
+              }
+
+              return _buildCardUI(percent: percent, count: count, subLabel: subLabel);
+            },
+          );
+        },
+      );
+    }
+
     final uid = UserSession.currentUserId ?? "";
 
     return StreamBuilder<QuerySnapshot>(
@@ -7901,11 +8097,12 @@ class _StudentAttendanceStatCardState extends State<StudentAttendanceStatCard> {
         if (snap.hasData) {
           for (var d in snap.data!.docs) {
             final data = d.data() as Map<String, dynamic>;
-            DateTime date = (data['date'] as Timestamp).toDate();
-
-            if (date.year == widget.selectedYear && date.month == widget.selectedMonth) {
-              if (data['status'] == "P") present++;
-              if (data['status'] == "A") absent++;
+            if (data['date'] is Timestamp) {
+              DateTime date = (data['date'] as Timestamp).toDate();
+              if (date.year == widget.selectedYear && date.month == widget.selectedMonth) {
+                if (data['status'] == "P") present++;
+                if (data['status'] == "A") absent++;
+              }
             }
           }
         }
@@ -7914,85 +8111,94 @@ class _StudentAttendanceStatCardState extends State<StudentAttendanceStatCard> {
         int count = widget.isPresent ? present : absent;
         double percent = (count / totalDays).clamp(0.0, 1.0);
 
-        final Color mainColor = widget.isPresent ? const Color(0xFF059669) : const Color(0xFFE11D48);
-        final Color cardBgTop = widget.isPresent ? const Color(0xFFECFDF5) : const Color(0xFFFFF1F2);
-        final Color cardBgBottom = widget.isPresent ? const Color(0xFFD1FAE5) : const Color(0xFFFFE4E6);
-        final Color borderColor = widget.isPresent ? const Color(0xFFA7F3D0) : const Color(0xFFFECDD3);
-
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              gradient: LinearGradient(
-                colors: [cardBgTop, cardBgBottom],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              border: Border.all(color: borderColor, width: 1.5),
-              boxShadow: [
-                BoxShadow(
-                  color: mainColor.withOpacity(0.12),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                // 🎨 TOP-LEFT CORNER ATTACHED BADGE
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: mainColor.withOpacity(0.15),
-                      borderRadius: const BorderRadius.only(
-                        bottomRight: Radius.circular(16),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          widget.isPresent ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                          color: mainColor,
-                          size: 13,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          widget.isPresent ? "PRESENT" : "ABSENT",
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            color: mainColor,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // 🔄 ANIMATED ROTATING CIRCLE IN CENTER
-                Positioned.fill(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: Center(
-                      child: AnimatedAttendanceCircle(
-                        percent: percent,
-                        isPresent: widget.isPresent,
-                        count: count,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+        return _buildCardUI(percent: percent, count: count, subLabel: "$count Days");
       },
+    );
+  }
+
+  Widget _buildCardUI({
+    required double percent,
+    required int count,
+    required String subLabel,
+  }) {
+    final Color mainColor = widget.isPresent ? const Color(0xFF059669) : const Color(0xFFE11D48);
+    final Color cardBgTop = widget.isPresent ? const Color(0xFFECFDF5) : const Color(0xFFFFF1F2);
+    final Color cardBgBottom = widget.isPresent ? const Color(0xFFD1FAE5) : const Color(0xFFFFE4E6);
+    final Color borderColor = widget.isPresent ? const Color(0xFFA7F3D0) : const Color(0xFFFECDD3);
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            colors: [cardBgTop, cardBgBottom],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          border: Border.all(color: borderColor, width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: mainColor.withOpacity(0.12),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // 🎨 TOP-LEFT CORNER ATTACHED BADGE
+            Positioned(
+              top: 0,
+              left: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: mainColor.withOpacity(0.15),
+                  borderRadius: const BorderRadius.only(
+                    bottomRight: Radius.circular(16),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      widget.isPresent ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                      color: mainColor,
+                      size: 13,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      widget.isPresent ? "PRESENT" : "ABSENT",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        color: mainColor,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // 🔄 ANIMATED ROTATING CIRCLE IN CENTER
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Center(
+                  child: AnimatedAttendanceCircle(
+                    percent: percent,
+                    isPresent: widget.isPresent,
+                    count: count,
+                    subLabel: subLabel,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -8001,12 +8207,14 @@ class AnimatedAttendanceCircle extends StatefulWidget {
   final double percent;
   final bool isPresent;
   final int count;
+  final String? subLabel;
 
   const AnimatedAttendanceCircle({
     super.key,
     required this.percent,
     required this.isPresent,
     required this.count,
+    this.subLabel,
   });
 
   @override
@@ -8073,7 +8281,7 @@ class _AnimatedAttendanceCircleState extends State<AnimatedAttendanceCircle>
                   ),
                   const SizedBox(height: 1),
                   Text(
-                    "${widget.count} Days",
+                    widget.subLabel ?? "${widget.count} Days",
                     style: TextStyle(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w800,
