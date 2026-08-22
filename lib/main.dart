@@ -1496,6 +1496,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         onLogout: widget.onLogout,
                         activeGradient: _activeHeaderGradient,
                         activeAccent: _activeHeaderAccent,
+                        topInset: MediaQuery.of(context).padding.top,
                         onStoryChanged: (gradient, accent) {
                           if (mounted) {
                             setState(() {
@@ -2450,6 +2451,7 @@ class _MasterpieceBannerHeaderDelegate extends SliverPersistentHeaderDelegate {
   final List<Color> activeGradient;
   final Color activeAccent;
   final Function(List<Color> gradient, Color accent) onStoryChanged;
+  final double topInset;
 
   _MasterpieceBannerHeaderDelegate({
     required this.roleName,
@@ -2457,13 +2459,14 @@ class _MasterpieceBannerHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.activeGradient,
     required this.activeAccent,
     required this.onStoryChanged,
+    required this.topInset,
   });
 
   @override
-  double get minExtent => 68.0;
+  double get minExtent => topInset + 78.0;
 
   @override
-  double get maxExtent => 250.0;
+  double get maxExtent => topInset + 245.0;
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
@@ -2472,8 +2475,8 @@ class _MasterpieceBannerHeaderDelegate extends SliverPersistentHeaderDelegate {
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
         boxShadow: [
           BoxShadow(
-            color: activeGradient.first.withOpacity(0.3),
-            blurRadius: 16,
+            color: activeGradient.first.withOpacity(0.35),
+            blurRadius: 18,
             offset: const Offset(0, 8),
           ),
         ],
@@ -2509,7 +2512,8 @@ class _MasterpieceBannerHeaderDelegate extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(covariant _MasterpieceBannerHeaderDelegate oldDelegate) {
     return oldDelegate.roleName != roleName ||
         oldDelegate.activeGradient != activeGradient ||
-        oldDelegate.activeAccent != activeAccent;
+        oldDelegate.activeAccent != activeAccent ||
+        oldDelegate.topInset != topInset;
   }
 }
 
@@ -2645,7 +2649,7 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
   Widget build(BuildContext context) {
     final double topInset = MediaQuery.of(context).padding.top;
     return SizedBox(
-      height: 250.0,
+      height: topInset + 245.0,
       child: PageView.builder(
         controller: _pageController,
         onPageChanged: (index) {
