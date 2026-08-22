@@ -12947,24 +12947,23 @@ class _AddExamPageState extends State<AddExamPage> {
                           children: [
                             // 1. Table Top Header Bar (+ Add Subject Column Button)
                             Padding(
-                              padding: const EdgeInsets.all(14),
+                              padding: const EdgeInsets.all(12),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: const [
-                                      Icon(Icons.grid_on_rounded, size: 20, color: Color(0xFF0B3C91)),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        "Student Marks Table",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF1E293B),
-                                        ),
+                                  const Icon(Icons.grid_on_rounded, size: 20, color: Color(0xFF0B3C91)),
+                                  const SizedBox(width: 8),
+                                  const Expanded(
+                                    child: Text(
+                                      "Marks Table",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF1E293B),
                                       ),
-                                    ],
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
+                                  const SizedBox(width: 6),
                                   OutlinedButton.icon(
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: const Color(0xFF0B3C91),
@@ -12972,7 +12971,7 @@ class _AddExamPageState extends State<AddExamPage> {
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                     ),
                                     onPressed: () {
                                       if (studentBlocks.isNotEmpty) {
@@ -12981,7 +12980,7 @@ class _AddExamPageState extends State<AddExamPage> {
                                     },
                                     icon: const Icon(Icons.add, size: 16),
                                     label: const Text(
-                                      "Add Subject Column",
+                                      "Subject Column",
                                       style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
                                     ),
                                   ),
