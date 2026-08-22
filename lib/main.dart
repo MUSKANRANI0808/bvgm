@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
@@ -24,7 +25,6 @@ import 'package:pdf/pdf.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
-import 'dart:convert';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -75,25 +75,40 @@ Future<void> sendEmail({
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyBuuDYNQY-7Qqlrp_v_VkHs4cfmPBKG5BE",
-      authDomain: "chatbot-1c143.firebaseapp.com",
-      databaseURL: "https://chatbot-1c143-default-rtdb.firebaseio.com",
-      projectId: "chatbot-1c143",
-      storageBucket: "chatbot-1c143.firebasestorage.app",
-      messagingSenderId: "321361304297",
-      appId: "1:321361304297:web:17719f07253c87a316ee78",
-    ),
-  );
-  await FirebaseMessaging.instance.requestPermission();
+  try {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyBuuDYNQY-7Qqlrp_v_VkHs4cfmPBKG5BE",
+        authDomain: "chatbot-1c143.firebaseapp.com",
+        databaseURL: "https://chatbot-1c143-default-rtdb.firebaseio.com",
+        projectId: "chatbot-1c143",
+        storageBucket: "chatbot-1c143.firebasestorage.app",
+        messagingSenderId: "321361304297",
+        appId: "1:321361304297:web:17719f07253c87a316ee78",
+      ),
+    );
+  } catch (e) {
+    debugPrint("Firebase init error: $e");
+  }
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    debugPrint("Notification: ${message.notification?.title}");
-  });
-  FirebaseFirestore.instance.settings = const Settings(
-    persistenceEnabled: true,
-  );
+  if (!kIsWeb) {
+    try {
+      FirebaseFirestore.instance.settings = const Settings(
+        persistenceEnabled: true,
+      );
+    } catch (e) {
+      debugPrint("Firestore persistence error: $e");
+    }
+  }
+
+  try {
+    await FirebaseMessaging.instance.requestPermission();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      debugPrint("Notification: ${message.notification?.title}");
+    });
+  } catch (e) {
+    debugPrint("Firebase messaging error: $e");
+  }
 
   runApp(const MyApp());
 }
