@@ -3994,7 +3994,7 @@ class ProfilePage extends StatelessWidget {
           String classSec = (data['classSection'] ?? data['class'] ?? "").toString();
           String rollNo = (data['rollNo'] ?? "").toString();
           String admNo = (data['admNo'] ?? data['admissionNo'] ?? "").toString();
-          String photoUrl = (data['photo'] ?? "").toString();
+          String photoUrl = (data['photo'] ?? data['photoUrl'] ?? data['imageUrl'] ?? "").toString();
 
           return SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 120),
@@ -4721,18 +4721,19 @@ class _AddUserDialogState extends State<AddUserDialog> {
   }
 
   Future<String?> uploadImage() async {
+    if (imageBytes == null) return null;
     try {
-      if (imageBytes == null) return null;
       final fileName = DateTime.now().millisecondsSinceEpoch.toString();
       final ref = FirebaseStorage.instance.ref().child("uploads/$fileName.jpg");
       final metadata = SettableMetadata(contentType: "image/jpeg");
       final task = await ref.putData(imageBytes!, metadata);
       final url = await task.ref.getDownloadURL();
-      return url;
+      if (url.isNotEmpty) return url;
     } catch (e) {
-      print("Upload Error: $e");
-      return null;
+      print("Storage Upload Error (Falling back to Base64 encoding): $e");
     }
+    // Base64 encoding fallback ensures image is ALWAYS saved even if storage fails!
+    return "data:image/jpeg;base64,${base64Encode(imageBytes!)}";
   }
 
   String targetCollection(String targetRole) {
@@ -4779,6 +4780,12 @@ class _AddUserDialogState extends State<AddUserDialog> {
 
       final String targetColl = targetCollection(role!);
 
+      final String finalPhoto = imageUrl ??
+          widget.oldData?['photo'] ??
+          widget.oldData?['photoUrl'] ??
+          widget.oldData?['imageUrl'] ??
+          "";
+
       final Map<String, dynamic> userData = {
         'name': nameCtrl.text.trim(),
         'fatherName': fatherCtrl.text.trim(),
@@ -4787,7 +4794,9 @@ class _AddUserDialogState extends State<AddUserDialog> {
         'mobile': mobileCtrl.text.trim(),
         'address': addressCtrl.text.trim(),
         'email': emailCtrl.text.trim(),
-        'photo': imageUrl ?? "",
+        'photo': finalPhoto,
+        'photoUrl': finalPhoto,
+        'imageUrl': finalPhoto,
         'role': role,
         'classSection': selectedClass ?? "",
         'subject': role == "teacher" ? subject : "",
@@ -5011,11 +5020,10 @@ class _AddUserDialogState extends State<AddUserDialog> {
                                       )
                                     : (imageUrl != null && imageUrl!.isNotEmpty)
                                         ? ClipOval(
-                                            child: Image.network(
-                                              imageUrl!,
+                                            child: SizedBox(
                                               width: 72,
                                               height: 72,
-                                              fit: BoxFit.cover,
+                                              child: buildSmartImage(imageUrl!, fit: BoxFit.cover),
                                             ),
                                           )
                                         : const Icon(
@@ -10759,13 +10767,34 @@ class _AddExamPageState extends State<AddExamPage> {
     final total = student['total'] ?? 0;
     final percent = student['percent'] ?? 0;
 
-    // 🔥 STUDENT PHOTO LOAD
+    // 🔥 STUDENT PHOTO LOAD (Supports HTTP URLs, Base64 Data URIs & Firestore document lookup)
     dynamic studentImage;
+    String photoStr = (student['photo'] ?? student['photoUrl'] ?? student['imageUrl'] ?? "").toString();
 
-    if (student['photo'] != null && student['photo'].toString().isNotEmpty) {
+    if (photoStr.isEmpty) {
       try {
-        studentImage = await networkImage(student['photo']);
+        final studentId = (student['studentId'] ?? student['id'] ?? UserSession.currentUserId ?? "").toString();
+        if (studentId.isNotEmpty) {
+          final snap = await UserSession.yearColl('students').doc(studentId).get();
+          if (snap.exists && snap.data() != null) {
+            final sData = snap.data() as Map<String, dynamic>;
+            photoStr = (sData['photo'] ?? sData['photoUrl'] ?? sData['imageUrl'] ?? "").toString();
+          }
+        }
+      } catch (_) {}
+    }
+
+    if (photoStr.isNotEmpty) {
+      try {
+        if (photoStr.startsWith('data:image')) {
+          final base64Str = photoStr.split(',').last;
+          final bytes = base64Decode(base64Str);
+          studentImage = pw.MemoryImage(bytes);
+        } else if (photoStr.startsWith('http://') || photoStr.startsWith('https://')) {
+          studentImage = await networkImage(photoStr);
+        }
       } catch (e) {
+        print("PDF Student Image Load Error: $e");
         studentImage = null;
       }
     }
@@ -11711,11 +11740,34 @@ Future<void> generateResultPdf(
   final total = student['total'] ?? 0;
   final percent = student['percent'] ?? 0;
 
+  // 🔥 STUDENT PHOTO LOAD (Supports HTTP URLs, Base64 Data URIs & Firestore document lookup)
   dynamic studentImage;
-  if (student['photo'] != null && student['photo'].toString().isNotEmpty) {
+  String photoStr = (student['photo'] ?? student['photoUrl'] ?? student['imageUrl'] ?? "").toString();
+
+  if (photoStr.isEmpty) {
     try {
-      studentImage = await networkImage(student['photo']);
-    } catch (_) {
+      final studentId = (student['studentId'] ?? student['id'] ?? UserSession.currentUserId ?? "").toString();
+      if (studentId.isNotEmpty) {
+        final snap = await UserSession.yearColl('students').doc(studentId).get();
+        if (snap.exists && snap.data() != null) {
+          final sData = snap.data() as Map<String, dynamic>;
+          photoStr = (sData['photo'] ?? sData['photoUrl'] ?? sData['imageUrl'] ?? "").toString();
+        }
+      }
+    } catch (_) {}
+  }
+
+  if (photoStr.isNotEmpty) {
+    try {
+      if (photoStr.startsWith('data:image')) {
+        final base64Str = photoStr.split(',').last;
+        final bytes = base64Decode(base64Str);
+        studentImage = pw.MemoryImage(bytes);
+      } else if (photoStr.startsWith('http://') || photoStr.startsWith('https://')) {
+        studentImage = await networkImage(photoStr);
+      }
+    } catch (e) {
+      print("PDF Student Image Load Error: $e");
       studentImage = null;
     }
   }
@@ -11800,15 +11852,26 @@ Future<void> generateResultPdf(
                       ],
                     ),
                   ),
-                  if (studentImage != null)
-                    pw.Container(
-                      height: 90,
-                      width: 75,
-                      decoration: pw.BoxDecoration(
-                        border: pw.Border.all(color: PdfColors.blueGrey, width: 1),
-                      ),
-                      child: pw.Image(studentImage, fit: pw.BoxFit.cover),
+                  pw.Container(
+                    height: 90,
+                    width: 75,
+                    decoration: pw.BoxDecoration(
+                      border: pw.Border.all(color: PdfColors.blueGrey, width: 1),
+                      borderRadius: pw.BorderRadius.circular(4),
                     ),
+                    child: studentImage != null
+                        ? pw.Image(studentImage, fit: pw.BoxFit.cover)
+                        : pw.Center(
+                            child: pw.Text(
+                              "PHOTO",
+                              style: pw.TextStyle(
+                                fontSize: 9,
+                                color: PdfColors.grey600,
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                  ),
                 ],
               ),
               pw.SizedBox(height: 18),
@@ -12297,7 +12360,8 @@ class ResultViewPage extends StatelessWidget {
                               "rollNo": data['rollNo'] ?? "",
                               "admNo": data['admNo'] ?? "",
                               "dob": data['dob'] ?? "",
-                              "photo": data['photo'],
+                              "photo": data['photo'] ?? data['photoUrl'] ?? data['imageUrl'],
+                              "studentId": data['studentId'] ?? data['id'],
                               "marks": marks,
                               "total": total,
                               "percent": percent,
