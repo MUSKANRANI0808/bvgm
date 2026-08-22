@@ -10978,8 +10978,6 @@ class _AddExamPageState extends State<AddExamPage> {
                     ),
                   ],
                 ),
-                  ],
-                ),
 
                 pw.SizedBox(height: 18),
 
