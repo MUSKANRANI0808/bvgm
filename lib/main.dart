@@ -959,7 +959,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 }
 
 // ============================================================================
-// 🔷 ANIMATED PEEKING STUDENT BOY WIDGET (HAIR SWAY, EYE BLINKING & BREATHING)
+// 🔷 ANIMATED PEEKING STUDENT BOY WIDGET (HAIR SWAY, EYE BLINKING & SMILE)
 // ============================================================================
 class AnimatedPeekingBoy extends StatefulWidget {
   final double height;
@@ -973,35 +973,53 @@ class _AnimatedPeekingBoyState extends State<AnimatedPeekingBoy>
     with TickerProviderStateMixin {
   late AnimationController _swayController;
   late AnimationController _blinkController;
+  late AnimationController _smileController;
+
   late Animation<double> _swayAnimation;
-  late Animation<double> _headTiltAnimation;
+  late Animation<double> _tiltAnimation;
+  late Animation<double> _hairSwayAnimation;
   late Animation<double> _blinkAnimation;
+  late Animation<double> _smileScaleAnimation;
 
   @override
   void initState() {
     super.initState();
-    // 1. Hair / Head Sway Breathing Animation (Soft natural floating movement)
+    // 1. Hair & Head Sway Breathing Motion (2.8s smooth loop)
     _swayController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2400),
+      duration: const Duration(milliseconds: 2800),
     )..repeat(reverse: true);
 
-    _swayAnimation = Tween<double>(begin: 0.0, end: -3.5).animate(
+    _swayAnimation = Tween<double>(begin: 0.0, end: -4.0).animate(
       CurvedAnimation(parent: _swayController, curve: Curves.easeInOutSine),
     );
 
-    _headTiltAnimation = Tween<double>(begin: -0.02, end: 0.02).animate(
+    _tiltAnimation = Tween<double>(begin: -0.025, end: 0.025).animate(
       CurvedAnimation(parent: _swayController, curve: Curves.easeInOutSine),
     );
 
-    // 2. Eye Blinking Timer & Animation (Blinks every 3.2 seconds)
+    _hairSwayAnimation = Tween<double>(begin: -3.0, end: 3.0).animate(
+      CurvedAnimation(parent: _swayController, curve: Curves.easeInOutSine),
+    );
+
+    // 2. Eye Blinking Motion (140ms quick natural eye blink)
     _blinkController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 160),
+      duration: const Duration(milliseconds: 140),
     );
 
-    _blinkAnimation = Tween<double>(begin: 1.0, end: 0.05).animate(
+    _blinkAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _blinkController, curve: Curves.easeInOut),
+    );
+
+    // 3. Cheerful Smile Motion (Breathing smile flex)
+    _smileController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat(reverse: true);
+
+    _smileScaleAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
+      CurvedAnimation(parent: _smileController, curve: Curves.easeInOutSine),
     );
 
     _startBlinkLoop();
@@ -1009,7 +1027,7 @@ class _AnimatedPeekingBoyState extends State<AnimatedPeekingBoy>
 
   void _startBlinkLoop() async {
     while (mounted) {
-      await Future.delayed(Duration(milliseconds: 2600 + (DateTime.now().millisecond % 1400)));
+      await Future.delayed(Duration(milliseconds: 2500 + (DateTime.now().millisecond % 1600)));
       if (mounted) {
         await _blinkController.forward();
         await _blinkController.reverse();
@@ -1021,51 +1039,151 @@ class _AnimatedPeekingBoyState extends State<AnimatedPeekingBoy>
   void dispose() {
     _swayController.dispose();
     _blinkController.dispose();
+    _smileController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([_swayController, _blinkController]),
+      animation: Listenable.merge([_swayController, _blinkController, _smileController]),
       builder: (context, child) {
         return Transform.translate(
           offset: Offset(0, _swayAnimation.value),
           child: Transform.rotate(
-            angle: _headTiltAnimation.value,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                // Base Boy Illustration with cheerful smiling expression
-                Image.asset(
-                  "assets/student_peeking.png",
-                  height: widget.height,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const SizedBox(),
-                ),
+            angle: _tiltAnimation.value,
+            child: SizedBox(
+              width: widget.height * 1.05,
+              height: widget.height,
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  // Base Boy Avatar
+                  Image.asset(
+                    "assets/student_peeking.png",
+                    height: widget.height,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => const SizedBox(),
+                  ),
 
-                // Eye Blinking Overlay Layer (Natural eyelid blink)
-                Positioned(
-                  top: widget.height * 0.27,
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 90),
-                    opacity: 1.0 - _blinkAnimation.value,
-                    child: Container(
-                      width: widget.height * 0.38,
-                      height: widget.height * 0.06,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF5D4037), // Natural eyelid tone
-                        borderRadius: BorderRadius.circular(4),
+                  // Vector Animation Overlay for Eyes, Hair & Smile
+                  Positioned.fill(
+                    child: CustomPaint(
+                      painter: _PeekingBoyDetailsPainter(
+                        blinkProgress: _blinkAnimation.value,
+                        hairOffset: _hairSwayAnimation.value,
+                        smileScale: _smileScaleAnimation.value,
+                        sizeHeight: widget.height,
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
       },
     );
+  }
+}
+
+// ============================================================================
+// 🎨 CUSTOM VECTOR PAINTER FOR EYE BLINKING, HAIR SWAY & CHEERFUL SMILE
+// ============================================================================
+class _PeekingBoyDetailsPainter extends CustomPainter {
+  final double blinkProgress;
+  final double hairOffset;
+  final double smileScale;
+  final double sizeHeight;
+
+  _PeekingBoyDetailsPainter({
+    required this.blinkProgress,
+    required this.hairOffset,
+    required this.smileScale,
+    required this.sizeHeight,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final centerX = size.width / 2;
+
+    // 🔷 1. DYNAMIC EYE BLINKING (Curved Eyelid Lines when Blinking)
+    if (blinkProgress > 0.05) {
+      final eyelidPaint = Paint()
+        ..color = const Color(0xFF3D2314)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3.2 * (sizeHeight / 115)
+        ..strokeCap = StrokeCap.round;
+
+      final eyeY = sizeHeight * 0.28;
+      final eyeSpacing = sizeHeight * 0.12;
+
+      // Left Eyelid Arc
+      final leftPath = Path();
+      leftPath.moveTo(centerX - eyeSpacing - 10, eyeY);
+      leftPath.quadraticBezierTo(
+        centerX - eyeSpacing,
+        eyeY + (6 * blinkProgress),
+        centerX - eyeSpacing + 10,
+        eyeY,
+      );
+      canvas.drawPath(leftPath, eyelidPaint);
+
+      // Right Eyelid Arc
+      final rightPath = Path();
+      rightPath.moveTo(centerX + eyeSpacing - 10, eyeY);
+      rightPath.quadraticBezierTo(
+        centerX + eyeSpacing,
+        eyeY + (6 * blinkProgress),
+        centerX + eyeSpacing + 10,
+        eyeY,
+      );
+      canvas.drawPath(rightPath, eyelidPaint);
+    }
+
+    // 🔷 2. DYNAMIC HAIR SWAY (Front Locks Wave Animation)
+    final hairPaint = Paint()
+      ..color = const Color(0xFF1E1618)
+      ..style = PaintingStyle.fill;
+
+    final hairPath = Path();
+    final hairY = sizeHeight * 0.14;
+    hairPath.moveTo(centerX - 15 + hairOffset, hairY);
+    hairPath.quadraticBezierTo(
+      centerX + hairOffset,
+      hairY + 12,
+      centerX + 18 + hairOffset,
+      hairY + 4,
+    );
+    hairPath.quadraticBezierTo(
+      centerX + 4 + hairOffset,
+      hairY - 4,
+      centerX - 15 + hairOffset,
+      hairY,
+    );
+    canvas.drawPath(hairPath, hairPaint);
+
+    // 🔷 3. CHEERFUL SMILE FLEX (Subtle Cheerful Lip Highlight)
+    final smilePaint = Paint()
+      ..color = const Color(0xFFE11D48).withOpacity(0.40 * smileScale)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round;
+
+    final mouthY = sizeHeight * 0.385;
+    final mouthPath = Path();
+    final mouthWidth = 8.0 * smileScale;
+    mouthPath.moveTo(centerX - mouthWidth, mouthY);
+    mouthPath.quadraticBezierTo(centerX, mouthY + 4.5, centerX + mouthWidth, mouthY);
+    canvas.drawPath(mouthPath, smilePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _PeekingBoyDetailsPainter oldDelegate) {
+    return oldDelegate.blinkProgress != blinkProgress ||
+        oldDelegate.hairOffset != hairOffset ||
+        oldDelegate.smileScale != smileScale;
   }
 }
 
