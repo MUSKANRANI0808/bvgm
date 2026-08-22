@@ -10767,23 +10767,61 @@ class _AddExamPageState extends State<AddExamPage> {
     final total = student['total'] ?? 0;
     final percent = student['percent'] ?? 0;
 
-    // 🔥 STUDENT PHOTO LOAD (Supports HTTP URLs, Base64 Data URIs & Firestore document lookup)
-    dynamic studentImage;
+    String studentName = (student['studentName'] ?? student['name'] ?? "").toString();
+    String father = (student['father'] ?? student['fatherName'] ?? "").toString();
+    String mother = (student['mother'] ?? student['motherName'] ?? "").toString();
+    String rollNo = (student['rollNo'] ?? "").toString();
+    String studentClass = (student['class'] ?? student['classSection'] ?? "").toString();
+    String dob = (student['dob'] ?? student['dateOfBirth'] ?? "").toString();
+    String admNo = (student['admNo'] ?? student['admissionNo'] ?? "").toString();
     String photoStr = (student['photo'] ?? student['photoUrl'] ?? student['imageUrl'] ?? "").toString();
 
-    if (photoStr.isEmpty) {
+    final studentId = (student['studentId'] ?? student['id'] ?? UserSession.currentUserId ?? "").toString();
+
+    // 🔥 SMART LOOKUP: If key details are missing, fetch complete student document from Firestore!
+    if (father.isEmpty || mother.isEmpty || rollNo.isEmpty || studentClass.isEmpty || dob.isEmpty || photoStr.isEmpty) {
       try {
-        final studentId = (student['studentId'] ?? student['id'] ?? UserSession.currentUserId ?? "").toString();
+        DocumentSnapshot? snap;
         if (studentId.isNotEmpty) {
-          final snap = await UserSession.yearColl('students').doc(studentId).get();
-          if (snap.exists && snap.data() != null) {
-            final sData = snap.data() as Map<String, dynamic>;
-            photoStr = (sData['photo'] ?? sData['photoUrl'] ?? sData['imageUrl'] ?? "").toString();
+          snap = await UserSession.yearColl('students').doc(studentId).get();
+        }
+        if ((snap == null || !snap.exists) && studentName.isNotEmpty) {
+          final querySnap = await UserSession.yearColl('students')
+              .where('name', isEqualTo: studentName)
+              .limit(1)
+              .get();
+          if (querySnap.docs.isNotEmpty) {
+            snap = querySnap.docs.first;
           }
         }
-      } catch (_) {}
+        if ((snap == null || !snap.exists) && rollNo.isNotEmpty) {
+          final querySnap = await UserSession.yearColl('students')
+              .where('rollNo', isEqualTo: rollNo)
+              .limit(1)
+              .get();
+          if (querySnap.docs.isNotEmpty) {
+            snap = querySnap.docs.first;
+          }
+        }
+
+        if (snap != null && snap.exists && snap.data() != null) {
+          final sData = snap.data() as Map<String, dynamic>;
+          if (studentName.isEmpty) studentName = (sData['name'] ?? sData['studentName'] ?? "").toString();
+          if (father.isEmpty) father = (sData['fatherName'] ?? sData['father'] ?? "").toString();
+          if (mother.isEmpty) mother = (sData['motherName'] ?? sData['mother'] ?? "").toString();
+          if (rollNo.isEmpty) rollNo = (sData['rollNo'] ?? "").toString();
+          if (studentClass.isEmpty) studentClass = (sData['classSection'] ?? sData['class'] ?? "").toString();
+          if (dob.isEmpty) dob = (sData['dob'] ?? sData['dateOfBirth'] ?? "").toString();
+          if (admNo.isEmpty) admNo = (sData['admNo'] ?? sData['admissionNo'] ?? "").toString();
+          if (photoStr.isEmpty) photoStr = (sData['photo'] ?? sData['photoUrl'] ?? sData['imageUrl'] ?? "").toString();
+        }
+      } catch (e) {
+        print("Firestore Student Lookup Error for PDF: $e");
+      }
     }
 
+    // 🔥 STUDENT PHOTO LOAD
+    dynamic studentImage;
     if (photoStr.isNotEmpty) {
       try {
         if (photoStr.startsWith('data:image')) {
@@ -10812,7 +10850,6 @@ class _AddExamPageState extends State<AddExamPage> {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                // 🔷 SCHOOL HEADER
                 // 🔷 SCHOOL HEADER
                 pw.Container(
                   width: double.infinity,
@@ -10877,13 +10914,13 @@ class _AddExamPageState extends State<AddExamPage> {
                             child: pw.Column(
                               crossAxisAlignment: pw.CrossAxisAlignment.start,
                               children: [
-                                infoRow("Name", student['studentName']),
+                                infoRow("Name", studentName.isNotEmpty ? studentName : "-"),
                                 pw.SizedBox(height: 10),
-                                infoRow("Father", student['father']),
+                                infoRow("Father", father.isNotEmpty ? father : "-"),
                                 pw.SizedBox(height: 10),
-                                infoRow("Mother", student['mother']),
+                                infoRow("Mother", mother.isNotEmpty ? mother : "-"),
                                 pw.SizedBox(height: 10),
-                                infoRow("DOB", student['dob']),
+                                infoRow("DOB", dob.isNotEmpty ? dob : "-"),
                               ],
                             ),
                           ),
@@ -10895,11 +10932,11 @@ class _AddExamPageState extends State<AddExamPage> {
                             child: pw.Column(
                               crossAxisAlignment: pw.CrossAxisAlignment.start,
                               children: [
-                                infoRow("Roll No", student['rollNo']),
+                                infoRow("Roll No", rollNo.isNotEmpty ? rollNo : "-"),
                                 pw.SizedBox(height: 10),
-                                infoRow("Adm No", student['admNo']),
+                                infoRow("Adm No", admNo.isNotEmpty ? admNo : "-"),
                                 pw.SizedBox(height: 10),
-                                infoRow("Class", student['class']),
+                                infoRow("Class", studentClass.isNotEmpty ? studentClass : "-"),
                                 pw.SizedBox(height: 10),
                                 infoRow("PEN No", "-"),
                               ],
@@ -10912,23 +10949,35 @@ class _AddExamPageState extends State<AddExamPage> {
                     pw.SizedBox(width: 20),
 
                     // 🔥 PHOTO
-                    if (studentImage != null)
-                      pw.Container(
-                        height: 110,
-                        width: 90,
-                        decoration: pw.BoxDecoration(
-                          border: pw.Border.all(
-                            color: PdfColors.blueGrey,
-                            width: 1.5,
-                          ),
-                          borderRadius: pw.BorderRadius.circular(4),
+                    pw.Container(
+                      height: 110,
+                      width: 90,
+                      decoration: pw.BoxDecoration(
+                        border: pw.Border.all(
+                          color: PdfColors.blueGrey,
+                          width: 1.5,
                         ),
-                        padding: const pw.EdgeInsets.all(4),
-                        child: pw.Image(
-                          studentImage,
-                          fit: pw.BoxFit.cover,
-                        ),
+                        borderRadius: pw.BorderRadius.circular(4),
                       ),
+                      padding: const pw.EdgeInsets.all(4),
+                      child: studentImage != null
+                          ? pw.Image(
+                              studentImage,
+                              fit: pw.BoxFit.cover,
+                            )
+                          : pw.Center(
+                              child: pw.Text(
+                                "PHOTO",
+                                style: pw.TextStyle(
+                                  fontSize: 10,
+                                  color: PdfColors.grey600,
+                                  fontWeight: pw.FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
                   ],
                 ),
 
@@ -11740,23 +11789,59 @@ Future<void> generateResultPdf(
   final total = student['total'] ?? 0;
   final percent = student['percent'] ?? 0;
 
-  // 🔥 STUDENT PHOTO LOAD (Supports HTTP URLs, Base64 Data URIs & Firestore document lookup)
-  dynamic studentImage;
+  String studentName = (student['studentName'] ?? student['name'] ?? "").toString();
+  String father = (student['father'] ?? student['fatherName'] ?? "").toString();
+  String mother = (student['mother'] ?? student['motherName'] ?? "").toString();
+  String rollNo = (student['rollNo'] ?? "").toString();
+  String studentClass = (student['class'] ?? student['classSection'] ?? "").toString();
+  String dob = (student['dob'] ?? student['dateOfBirth'] ?? "").toString();
   String photoStr = (student['photo'] ?? student['photoUrl'] ?? student['imageUrl'] ?? "").toString();
 
-  if (photoStr.isEmpty) {
+  final studentId = (student['studentId'] ?? student['id'] ?? UserSession.currentUserId ?? "").toString();
+
+  // 🔥 SMART LOOKUP: If key details are missing, fetch complete student document from Firestore!
+  if (father.isEmpty || mother.isEmpty || rollNo.isEmpty || studentClass.isEmpty || dob.isEmpty || photoStr.isEmpty) {
     try {
-      final studentId = (student['studentId'] ?? student['id'] ?? UserSession.currentUserId ?? "").toString();
+      DocumentSnapshot? snap;
       if (studentId.isNotEmpty) {
-        final snap = await UserSession.yearColl('students').doc(studentId).get();
-        if (snap.exists && snap.data() != null) {
-          final sData = snap.data() as Map<String, dynamic>;
-          photoStr = (sData['photo'] ?? sData['photoUrl'] ?? sData['imageUrl'] ?? "").toString();
+        snap = await UserSession.yearColl('students').doc(studentId).get();
+      }
+      if ((snap == null || !snap.exists) && studentName.isNotEmpty) {
+        final querySnap = await UserSession.yearColl('students')
+            .where('name', isEqualTo: studentName)
+            .limit(1)
+            .get();
+        if (querySnap.docs.isNotEmpty) {
+          snap = querySnap.docs.first;
         }
       }
-    } catch (_) {}
+      if ((snap == null || !snap.exists) && rollNo.isNotEmpty) {
+        final querySnap = await UserSession.yearColl('students')
+            .where('rollNo', isEqualTo: rollNo)
+            .limit(1)
+            .get();
+        if (querySnap.docs.isNotEmpty) {
+          snap = querySnap.docs.first;
+        }
+      }
+
+      if (snap != null && snap.exists && snap.data() != null) {
+        final sData = snap.data() as Map<String, dynamic>;
+        if (studentName.isEmpty) studentName = (sData['name'] ?? sData['studentName'] ?? "").toString();
+        if (father.isEmpty) father = (sData['fatherName'] ?? sData['father'] ?? "").toString();
+        if (mother.isEmpty) mother = (sData['motherName'] ?? sData['mother'] ?? "").toString();
+        if (rollNo.isEmpty) rollNo = (sData['rollNo'] ?? "").toString();
+        if (studentClass.isEmpty) studentClass = (sData['classSection'] ?? sData['class'] ?? "").toString();
+        if (dob.isEmpty) dob = (sData['dob'] ?? sData['dateOfBirth'] ?? "").toString();
+        if (photoStr.isEmpty) photoStr = (sData['photo'] ?? sData['photoUrl'] ?? sData['imageUrl'] ?? "").toString();
+      }
+    } catch (e) {
+      print("Firestore Student Lookup Error for PDF: $e");
+    }
   }
 
+  // 🔥 STUDENT PHOTO LOAD
+  dynamic studentImage;
   if (photoStr.isNotEmpty) {
     try {
       if (photoStr.startsWith('data:image')) {
@@ -11828,11 +11913,11 @@ Future<void> generateResultPdf(
                           child: pw.Column(
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
                             children: [
-                              pw.Text("Name: ${student['studentName'] ?? '-'}"),
+                              pw.Text("Name: ${studentName.isNotEmpty ? studentName : '-'}"),
                               pw.SizedBox(height: 8),
-                              pw.Text("Father: ${student['father'] ?? '-'}"),
+                              pw.Text("Father: ${father.isNotEmpty ? father : '-'}"),
                               pw.SizedBox(height: 8),
-                              pw.Text("Mother: ${student['mother'] ?? '-'}"),
+                              pw.Text("Mother: ${mother.isNotEmpty ? mother : '-'}"),
                             ],
                           ),
                         ),
@@ -11841,11 +11926,11 @@ Future<void> generateResultPdf(
                           child: pw.Column(
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
                             children: [
-                              pw.Text("Roll No: ${student['rollNo'] ?? '-'}"),
+                              pw.Text("Roll No: ${rollNo.isNotEmpty ? rollNo : '-'}"),
                               pw.SizedBox(height: 8),
-                              pw.Text("Class: ${student['class'] ?? '-'}"),
+                              pw.Text("Class: ${studentClass.isNotEmpty ? studentClass : '-'}"),
                               pw.SizedBox(height: 8),
-                              pw.Text("DOB: ${student['dob'] ?? '-'}"),
+                              pw.Text("DOB: ${dob.isNotEmpty ? dob : '-'}"),
                             ],
                           ),
                         ),
