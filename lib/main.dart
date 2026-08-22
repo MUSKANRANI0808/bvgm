@@ -482,19 +482,22 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF1F5F9),
       body: Stack(
         children: [
-          // 🔷 1. ANIMATED BACKGROUND GRADIENT & FLOATING ORBS
+          // 🔷 1. ANIMATED TOP HERO GRADIENT HEADER
           AnimatedBuilder(
             animation: _floatController,
             builder: (context, child) {
               return Container(
+                height: 280,
+                width: double.infinity,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color(0xFFF8FAFC),
-                      Color(0xFFEFF6FF),
-                      Color(0xFFF1F5F9),
+                      Color(0xFF1E3A8A),
+                      Color(0xFF2563EB),
+                      Color(0xFF3B82F6),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -502,57 +505,119 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 ),
                 child: Stack(
                   children: [
-                    // Top-Left Floating Orb
+                    // Floating Glowing Circle 1
                     Positioned(
-                      top: -60 + (_floatAnimation.value * 2),
-                      left: -40 + (_floatAnimation.value * 1.5),
+                      top: -40 + (_floatAnimation.value * 1.5),
+                      right: -30,
                       child: Container(
-                        width: 260,
-                        height: 260,
+                        width: 200,
+                        height: 200,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              const Color(0xFF60A5FA).withOpacity(0.22),
-                              const Color(0xFF3B82F6).withOpacity(0.0),
-                            ],
-                          ),
+                          color: Colors.white.withOpacity(0.08),
                         ),
                       ),
                     ),
-                    // Bottom-Right Floating Orb
+                    // Floating Glowing Circle 2
                     Positioned(
-                      bottom: -80 - (_floatAnimation.value * 2),
-                      right: -50 - (_floatAnimation.value * 1.5),
-                      child: Container(
-                        width: 320,
-                        height: 320,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              const Color(0xFF818CF8).withOpacity(0.20),
-                              const Color(0xFF6366F1).withOpacity(0.0),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Center Subtle Glow
-                    Positioned(
-                      top: MediaQuery.of(context).size.height * 0.35 + _floatAnimation.value,
-                      right: 20,
+                      bottom: 20 - (_floatAnimation.value * 1.2),
+                      left: -50,
                       child: Container(
                         width: 180,
                         height: 180,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              const Color(0xFF38BDF8).withOpacity(0.12),
-                              Colors.transparent,
-                            ],
-                          ),
+                          color: Colors.white.withOpacity(0.06),
+                        ),
+                      ),
+                    ),
+                    // Sparkle Icon 1
+                    Positioned(
+                      top: 40 + _floatAnimation.value,
+                      left: 40,
+                      child: Icon(
+                        Icons.auto_awesome,
+                        color: Colors.white.withOpacity(0.4),
+                        size: 20,
+                      ),
+                    ),
+                    // Sparkle Icon 2
+                    Positioned(
+                      top: 80 - _floatAnimation.value,
+                      right: 50,
+                      child: Icon(
+                        Icons.star_rounded,
+                        color: Colors.amberAccent.withOpacity(0.6),
+                        size: 16,
+                      ),
+                    ),
+
+                    // 🔷 SCHOOL BRANDING HEADER CONTENT
+                    SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            // Logo Badge with Circular Glow
+                            Container(
+                              width: 64,
+                              height: 64,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.18),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                              child: ClipOval(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: Image.asset(
+                                    "assets/logo.png",
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => const Icon(
+                                      Icons.school_rounded,
+                                      color: Color(0xFF2563EB),
+                                      size: 34,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              "BAL VIKASH GYAN MANDIR",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Text(
+                                "RANIGANJ • ARARIA",
+                                style: TextStyle(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                  letterSpacing: 0.6,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -562,273 +627,233 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             },
           ),
 
-          // 🔷 2. MAIN LOGIN CONTENT WITH ENTRANCE ANIMATION
+          // 🔷 2. MAIN LOGIN FORM SHEET CARD
           SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SlideTransition(
-                    position: _slideAnimation,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(top: 210, left: 16, right: 16, bottom: 20),
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(22),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF1E3A8A).withOpacity(0.10),
+                          blurRadius: 28,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // 🔷 1. ANIMATED BLUE THEME WELCOME ILLUSTRATION (Inspired by Screenshot 2)
-                        _AnimatedWelcomeIllustration(
-                          floatController: _floatController,
-                          floatAnimation: _floatAnimation,
-                          pulseAnimation: _pulseAnimation,
+                        // Card Header
+                        const Text(
+                          'Sign In',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF0F172A),
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Select Session Year & enter credentials to continue',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF64748B),
+                          ),
                         ),
 
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 20),
 
-                        // 🔷 2. FULL-WIDTH LOGIN FORM CARD
+                        // 🔷 ACADEMIC SESSION YEAR SELECTOR
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(22),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.94),
-                            borderRadius: BorderRadius.circular(28),
-                            border: Border.all(color: Colors.white, width: 1.5),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF1E3A8A).withOpacity(0.08),
-                                blurRadius: 32,
-                                offset: const Offset(0, 12),
+                            color: const Color(0xFFF8FAFC),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_month_rounded, size: 20, color: Color(0xFF2563EB)),
+                              const SizedBox(width: 10),
+                              const Text(
+                                "Session Year:",
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF334155),
+                                ),
+                              ),
+                              const Spacer(),
+                              DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  value: selectedYear,
+                                  icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF2563EB)),
+                                  style: const TextStyle(
+                                    fontSize: 14.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF2563EB),
+                                  ),
+                                  items: ["2024", "2025", "2026", "2027", "2028", "2029", "2030"]
+                                      .map((y) => DropdownMenuItem(value: y, child: Text(y)))
+                                      .toList(),
+                                  onChanged: (val) {
+                                    if (val != null) {
+                                      setState(() => selectedYear = val);
+                                    }
+                                  },
+                                ),
                               ),
                             ],
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              // Title Block
-                              Center(
-                                child: Column(
-                                  children: [
-                                    ShaderMask(
-                                      shaderCallback: (bounds) => const LinearGradient(
-                                        colors: [Color(0xFF1E40AF), Color(0xFF4F46E5)],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ).createShader(bounds),
-                                      child: const Text(
-                                        'BVGM LOGIN',
-                                        style: TextStyle(
-                                          fontSize: 26,
-                                          fontWeight: FontWeight.w900,
-                                          letterSpacing: 1.0,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    const Text(
-                                      'Select Session Year & enter credentials to sign in',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xFF64748B),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                        ),
 
-                              const SizedBox(height: 20),
+                        const SizedBox(height: 16),
 
-                              // 🔷 ACADEMIC SESSION YEAR SELECTOR (FULL WIDTH)
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        // 🔷 INPUT FIELDS
+                        buildField(
+                          controller: userCtrl,
+                          hint: 'Mobile / Email / User ID',
+                          icon: Icons.person_outline_rounded,
+                        ),
+                        const SizedBox(height: 14),
+                        buildField(
+                          controller: passCtrl,
+                          hint: 'Password',
+                          icon: Icons.lock_outline_rounded,
+                          obscure: hidePass,
+                          suffix: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                hidePass = !hidePass;
+                              });
+                            },
+                            icon: Icon(
+                              hidePass
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // 🔷 GRADIENT LOGIN BUTTON
+                        SizedBox(
+                          width: double.infinity,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(18),
+                              onTap: loading ? null : _login,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                height: 54,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF8FAFC),
                                   borderRadius: BorderRadius.circular(18),
-                                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.02),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
+                                      color: const Color(0xFF2563EB).withOpacity(0.35),
+                                      blurRadius: 18,
+                                      offset: const Offset(0, 8),
                                     ),
                                   ],
                                 ),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.calendar_month_rounded, size: 22, color: Color(0xFF2563EB)),
-                                    const SizedBox(width: 12),
-                                    const Text(
-                                      "Session Year:",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFF334155),
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                        value: selectedYear,
-                                        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF2563EB)),
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w800,
-                                          color: Color(0xFF2563EB),
-                                        ),
-                                        items: ["2024", "2025", "2026", "2027", "2028", "2029", "2030"]
-                                            .map((y) => DropdownMenuItem(value: y, child: Text(y)))
-                                            .toList(),
-                                        onChanged: (val) {
-                                          if (val != null) {
-                                            setState(() => selectedYear = val);
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              // 🔷 INPUT FIELDS (FULL WIDTH)
-                              buildField(
-                                controller: userCtrl,
-                                hint: 'Mobile / Email / User ID',
-                                icon: Icons.person_outline_rounded,
-                              ),
-                              const SizedBox(height: 14),
-                              buildField(
-                                controller: passCtrl,
-                                hint: 'Password',
-                                icon: Icons.lock_outline_rounded,
-                                obscure: hidePass,
-                                suffix: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      hidePass = !hidePass;
-                                    });
-                                  },
-                                  icon: Icon(
-                                    hidePass
-                                        ? Icons.visibility_off_outlined
-                                        : Icons.visibility_outlined,
-                                    color: const Color(0xFF64748B),
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 20),
-
-                              // 🔷 ANIMATED GRADIENT LOGIN BUTTON (FULL WIDTH)
-                              SizedBox(
-                                width: double.infinity,
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(18),
-                                    onTap: loading ? null : _login,
-                                    child: AnimatedContainer(
-                                      duration: const Duration(milliseconds: 200),
-                                      height: 56,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(18),
-                                        gradient: const LinearGradient(
-                                          colors: [Color(0xFF2563EB), Color(0xFF4F46E5)],
-                                          begin: Alignment.centerLeft,
-                                          end: Alignment.centerRight,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: const Color(0xFF2563EB).withOpacity(0.35),
-                                            blurRadius: 20,
-                                            offset: const Offset(0, 10),
+                                child: Center(
+                                  child: loading
+                                      ? const SizedBox(
+                                          height: 22,
+                                          width: 22,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2.5,
+                                            color: Colors.white,
                                           ),
-                                        ],
-                                      ),
-                                      child: Center(
-                                        child: loading
-                                            ? const SizedBox(
-                                                height: 24,
-                                                width: 24,
-                                                child: CircularProgressIndicator(
-                                                  strokeWidth: 2.5,
-                                                  color: Colors.white,
-                                                ),
-                                              )
-                                            : const Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'Login',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 17,
-                                                      fontWeight: FontWeight.w800,
-                                                      letterSpacing: 0.5,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 20),
-                                                ],
+                                        )
+                                      : const Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              'Sign In',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16.5,
+                                                fontWeight: FontWeight.w800,
+                                                letterSpacing: 0.4,
                                               ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 14),
-
-                              // 🔷 FORGOT PASSWORD
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton(
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (_) => const ForgotPasswordDialog(),
-                                    );
-                                  },
-                                  child: const Text(
-                                    "Forgot Password?",
-                                    style: TextStyle(
-                                      color: Color(0xFF2563EB),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 10),
-
-                              // 🔷 GLASSMORPHISM INFO BOX (FULL WIDTH)
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF1F5F9),
-                                  borderRadius: BorderRadius.circular(18),
-                                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                                ),
-                                child: const Row(
-                                  children: [
-                                    Icon(Icons.info_outline_rounded, color: Color(0xFF3B82F6), size: 20),
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        'Use Correct User Name OR Password.',
-                                        style: TextStyle(
-                                          color: Color(0xFF475569),
-                                          fontSize: 12.5,
-                                          fontWeight: FontWeight.w500,
-                                          height: 1.35,
+                                            ),
+                                            SizedBox(width: 8),
+                                            Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 20),
+                                          ],
                                         ),
-                                      ),
-                                    ),
-                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // 🔷 FORGOT PASSWORD
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => const ForgotPasswordDialog(),
+                              );
+                            },
+                            child: const Text(
+                              "Forgot Password?",
+                              style: TextStyle(
+                                color: Color(0xFF2563EB),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        // 🔷 INFO ALERT BOX
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEFF6FF),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: const Color(0xFFBFDBFE)),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.info_outline_rounded, color: Color(0xFF2563EB), size: 18),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  'Use registered User ID, Email, or Mobile to login.',
+                                  style: TextStyle(
+                                    color: Color(0xFF1E40AF),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ],
@@ -856,20 +881,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: TextField(
         controller: controller,
         obscureText: obscure,
         style: const TextStyle(
-          fontSize: 15,
+          fontSize: 14.5,
           fontWeight: FontWeight.w600,
           color: Color(0xFF1E293B),
         ),
@@ -878,25 +897,25 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           fillColor: const Color(0xFFF8FAFC),
           prefixIcon: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Icon(icon, color: const Color(0xFF2563EB), size: 22),
+            child: Icon(icon, color: const Color(0xFF2563EB), size: 21),
           ),
           suffixIcon: suffix,
           hintText: hint,
-          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14, fontWeight: FontWeight.w500),
+          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13.5, fontWeight: FontWeight.w500),
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 18,
+            horizontal: 16,
+            vertical: 16,
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+            borderRadius: BorderRadius.circular(18),
+            borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+            borderRadius: BorderRadius.circular(18),
+            borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(18),
             borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.8),
           ),
         ),
