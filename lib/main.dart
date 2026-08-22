@@ -796,10 +796,7 @@ class _HomeShellState extends State<HomeShell> {
     final pages = [
       DashboardPage(role: widget.role, onLogout: _logout),
       widget.role == UserRole.student
-          ? StudentFeeHistoryPage(
-              studentId: UserSession.currentUserId ?? "",
-              studentName: "Fee Statement",
-            )
+          ? const StudentFeesPage()
           : SecondPage(role: widget.role, title: tabs[1]),
       ThirdPage(role: widget.role, title: tabs[2]),
       NoticesPage(role: widget.role),
@@ -9293,10 +9290,11 @@ class StudentFeesPage extends StatelessWidget {
                             children: [
                               Row(
                                 children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                                    onPressed: () => Navigator.pop(context),
-                                  ),
+                                  if (ModalRoute.of(context)?.canPop ?? false)
+                                    IconButton(
+                                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
                                   const Text(
                                     "My Fees Statement",
                                     style: TextStyle(
