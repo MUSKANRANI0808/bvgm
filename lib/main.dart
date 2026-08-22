@@ -12927,29 +12927,13 @@ class _AddExamPageState extends State<AddExamPage> {
                           ],
                         ),
                       ),
-                      ...List.generate(studentBlocks.length, (i) {
-                        var block = studentBlocks[i];
-
-                      if (searchText.isNotEmpty) {
-                        String name = (block["studentName"] ?? "").toLowerCase();
-                        if (!name.contains(searchText)) {
-                          return const SizedBox();
-                        }
-                      }
-
-                      var result = calculateResult(block["subjects"]);
-                      final filteredStudents = getFilteredStudents(block["studentId"]);
-
-                      return Container(
+                      // 🔥 EXCEL-STYLE SCROLLABLE DATA TABLE GRID FOR STUDENT MARKS
+                      Container(
                         margin: const EdgeInsets.only(bottom: 16),
-                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: const Color(0xFFE2E8F0),
-                            width: 1,
-                          ),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.04),
@@ -12961,252 +12945,425 @@ class _AddExamPageState extends State<AddExamPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // STUDENT SELECTOR ROW WITH PDF & DELETE ACTION BUTTONS
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: DropdownButtonFormField<String>(
-                                    value: block["studentId"],
-                                    isExpanded: true,
-                                    hint: const Text("Select Student"),
-                                    decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 10),
-                                      filled: true,
-                                      fillColor: const Color(0xFFF8FAFC),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(color: Colors.grey.shade200),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(color: Colors.grey.shade200),
-                                      ),
-                                    ),
-                                    items: filteredStudents.map((doc) {
-                                      final data = doc.data() as Map<String, dynamic>;
-                                      String name = data['name'] ?? '';
-                                      String roll = data['rollNo']?.toString() ?? '';
-                                      return DropdownMenuItem(
-                                        value: doc.id,
-                                        child: Text(
-                                          "$name ${roll.isNotEmpty ? '(Roll: $roll)' : ''}",
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(fontWeight: FontWeight.w500),
+                            // 1. Table Top Header Bar (+ Add Subject Column Button)
+                            Padding(
+                              padding: const EdgeInsets.all(14),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: const [
+                                      Icon(Icons.grid_on_rounded, size: 20, color: Color(0xFF0B3C91)),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "Student Marks Table",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF1E293B),
                                         ),
-                                      );
-                                    }).toList(),
-                                    onChanged: (value) {
-                                      final d = students.firstWhere((e) => e.id == value);
-                                      final data = d.data() as Map<String, dynamic>;
-
-                                      setState(() {
-                                        block["studentId"] = value;
-                                        block["studentName"] = data['name'];
-                                      });
-                                    },
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-
-                                // PDF Slip Icon Button
-                                IconButton(
-                                  tooltip: "Generate Marksheet PDF",
-                                  style: IconButton.styleFrom(
-                                    backgroundColor: Colors.red.shade50,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  icon: const Icon(Icons.picture_as_pdf, color: Colors.red),
-                                  onPressed: () {
-                                    if (block["studentId"] == null) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text("Please select student first")),
-                                      );
-                                      return;
-                                    }
-
-                                    final selectedDoc = students.firstWhere(
-                                      (e) => e.id == block["studentId"],
-                                    );
-                                    final userData = selectedDoc.data() as Map<String, dynamic>;
-
-                                    final studentData = {
-                                      "studentName": block["studentName"] ?? "",
-                                      "father": userData['fatherName'] ?? "",
-                                      "mother": userData['motherName'] ?? "",
-                                      "class": userData['classSection'] ?? "",
-                                      "rollNo": userData['rollNo'] ?? "",
-                                      "admNo": userData['admNo'] ?? "",
-                                      "dob": userData['dob'] ?? "",
-                                      "photo": userData['photo'],
-                                      "marks": {
-                                        for (var sub in block["subjects"])
-                                          sub["name"].text:
-                                              int.tryParse(sub["marks"].text) ?? 0
-                                      },
-                                      "total": result["total"],
-                                      "percent": result["percent"],
-                                    };
-
-                                    generateStudentPdf(studentData);
-                                  },
-                                ),
-
-                                // Delete Student Card Button
-                                if (studentBlocks.length > 1)
-                                  IconButton(
-                                    tooltip: "Remove Student",
-                                    style: IconButton.styleFrom(
-                                      backgroundColor: Colors.red.shade50,
+                                  OutlinedButton.icon(
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: const Color(0xFF0B3C91),
+                                      side: const BorderSide(color: Color(0xFF93C5FD)),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                     ),
-                                    icon: const Icon(Icons.delete_outline, color: Colors.red),
-                                    onPressed: () => removeStudent(i),
+                                    onPressed: () {
+                                      if (studentBlocks.isNotEmpty) {
+                                        addSubject(0);
+                                      }
+                                    },
+                                    icon: const Icon(Icons.add, size: 16),
+                                    label: const Text(
+                                      "Add Subject Column",
+                                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                                    ),
                                   ),
-                              ],
-                            ),
-                            const SizedBox(height: 14),
-
-                            // SUBJECTS LIST TABLE
-                            Column(
-                              children: List.generate(
-                                block["subjects"].length,
-                                (j) {
-                                  var sub = block["subjects"][j];
-
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 5,
-                                          child: TextField(
-                                            controller: sub["name"],
-                                            scrollPadding: const EdgeInsets.only(bottom: 220),
-                                            decoration: InputDecoration(
-                                              labelText: "Subject Name",
-                                              hintText: "e.g. Math",
-                                              filled: true,
-                                              fillColor: const Color(0xFFF8FAFC),
-                                              contentPadding: const EdgeInsets.symmetric(
-                                                  horizontal: 12, vertical: 8),
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(8),
-                                                borderSide: BorderSide(color: Colors.grey.shade200),
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(8),
-                                                borderSide: BorderSide(color: Colors.grey.shade200),
-                                              ),
-                                            ),
-                                            onChanged: (_) {
-                                              setState(() {
-                                                syncSubjectsToAll(i);
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          flex: 4,
-                                          child: TextField(
-                                            controller: sub["marks"],
-                                            keyboardType: TextInputType.number,
-                                            scrollPadding: const EdgeInsets.only(bottom: 220),
-                                            decoration: InputDecoration(
-                                              labelText: "Marks",
-                                              hintText: "0",
-                                              filled: true,
-                                              fillColor: const Color(0xFFF8FAFC),
-                                              contentPadding: const EdgeInsets.symmetric(
-                                                  horizontal: 12, vertical: 8),
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(8),
-                                                borderSide: BorderSide(color: Colors.grey.shade200),
-                                              ),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(8),
-                                                borderSide: BorderSide(color: Colors.grey.shade200),
-                                              ),
-                                            ),
-                                            onChanged: (_) => setState(() {}),
-                                          ),
-                                        ),
-                                        if (block["subjects"].length > 1)
-                                          IconButton(
-                                            icon: const Icon(Icons.close, color: Colors.grey, size: 20),
-                                            onPressed: () => removeSubject(i, j),
-                                          )
-                                      ],
-                                    ),
-                                  );
-                                },
+                                ],
                               ),
                             ),
 
-                            const SizedBox(height: 10),
+                            const Divider(height: 1),
 
-                            // ADD SUBJECT BUTTON + TOTAL & PERCENT SUMMARY BAR
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                OutlinedButton.icon(
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: const Color(0xFF0B3C91),
-                                    side: const BorderSide(color: Color(0xFF93C5FD)),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  onPressed: () => addSubject(i),
-                                  icon: const Icon(Icons.add, size: 16),
-                                  label: const Text(
-                                    "Add Subject",
-                                    style: TextStyle(fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-
-                                // Total & Percentage Pill Badges
-                                Row(
+                            // 2. HORIZONTALLY SCROLLABLE FINGER-SWIPE TABLE
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              child: IntrinsicWidth(
+                                child: Column(
                                   children: [
-                                    Text(
-                                      "Total: ${result['total']}",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13,
-                                        color: Color(0xFF1E293B),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
+                                    // 🔷 TABLE HEADER ROW
                                     Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFDCFCE7),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: const Color(0xFF86EFAC)),
-                                      ),
-                                      child: Text(
-                                        "${result['percent'].toStringAsFixed(1)} %",
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                          color: Color(0xFF15803D),
-                                        ),
+                                      color: const Color(0xFFF1F5F9),
+                                      child: Row(
+                                        children: [
+                                          // Student Column Header
+                                          Container(
+                                            width: 200,
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                            alignment: Alignment.centerLeft,
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                right: BorderSide(color: Colors.grey.shade300, width: 0.8),
+                                                bottom: BorderSide(color: Colors.grey.shade300, width: 1.2),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              "Student",
+                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B)),
+                                            ),
+                                          ),
+
+                                          // Subject Columns Headers
+                                          if (studentBlocks.isNotEmpty)
+                                            ...List.generate(
+                                              (studentBlocks[0]["subjects"] as List).length,
+                                              (j) {
+                                                var subHeader = studentBlocks[0]["subjects"][j];
+                                                return Container(
+                                                  width: 125,
+                                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                                                  decoration: BoxDecoration(
+                                                    border: Border(
+                                                      right: BorderSide(color: Colors.grey.shade300, width: 0.8),
+                                                      bottom: BorderSide(color: Colors.grey.shade300, width: 1.2),
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: TextField(
+                                                          controller: subHeader["name"],
+                                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                                                          decoration: InputDecoration(
+                                                            hintText: "Subject",
+                                                            isDense: true,
+                                                            contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                                                            fillColor: Colors.white,
+                                                            filled: true,
+                                                            border: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(6),
+                                                              borderSide: BorderSide(color: Colors.grey.shade300),
+                                                            ),
+                                                            enabledBorder: OutlineInputBorder(
+                                                              borderRadius: BorderRadius.circular(6),
+                                                              borderSide: BorderSide(color: Colors.grey.shade300),
+                                                            ),
+                                                          ),
+                                                          onChanged: (_) {
+                                                            setState(() {
+                                                              syncSubjectsToAll(0);
+                                                            });
+                                                          },
+                                                        ),
+                                                      ),
+                                                      if ((studentBlocks[0]["subjects"] as List).length > 1)
+                                                        GestureDetector(
+                                                          onTap: () => removeSubject(0, j),
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.only(left: 3),
+                                                            child: Icon(Icons.close_rounded, size: 16, color: Colors.grey.shade600),
+                                                          ),
+                                                        ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+
+                                          // Total Header
+                                          Container(
+                                            width: 80,
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                right: BorderSide(color: Colors.grey.shade300, width: 0.8),
+                                                bottom: BorderSide(color: Colors.grey.shade300, width: 1.2),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              "Total",
+                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B)),
+                                            ),
+                                          ),
+
+                                          // % Header
+                                          Container(
+                                            width: 85,
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                right: BorderSide(color: Colors.grey.shade300, width: 0.8),
+                                                bottom: BorderSide(color: Colors.grey.shade300, width: 1.2),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              "%",
+                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B)),
+                                            ),
+                                          ),
+
+                                          // Action Header
+                                          Container(
+                                            width: 100,
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                bottom: BorderSide(color: Colors.grey.shade300, width: 1.2),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              "Actions",
+                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B)),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
+
+                                    // 🔷 TABLE DATA ROWS FOR STUDENTS
+                                    ...List.generate(studentBlocks.length, (i) {
+                                      var block = studentBlocks[i];
+
+                                      if (searchText.isNotEmpty) {
+                                        String name = (block["studentName"] ?? "").toLowerCase();
+                                        if (!name.contains(searchText)) {
+                                          return const SizedBox();
+                                        }
+                                      }
+
+                                      var result = calculateResult(block["subjects"]);
+                                      final filteredStudents = getFilteredStudents(block["studentId"]);
+                                      final isEvenRow = i % 2 == 0;
+
+                                      return Container(
+                                        color: isEvenRow ? Colors.white : const Color(0xFFFAFAFA),
+                                        child: Row(
+                                          children: [
+                                            // 1. Student Picker Cell
+                                            Container(
+                                              width: 200,
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  right: BorderSide(color: Colors.grey.shade200, width: 0.8),
+                                                  bottom: BorderSide(color: Colors.grey.shade200, width: 0.8),
+                                                ),
+                                              ),
+                                              child: DropdownButtonFormField<String>(
+                                                value: block["studentId"],
+                                                isExpanded: true,
+                                                hint: const Text("Select Student", style: TextStyle(fontSize: 12)),
+                                                decoration: InputDecoration(
+                                                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                                  filled: true,
+                                                  fillColor: const Color(0xFFF8FAFC),
+                                                  isDense: true,
+                                                  border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(8),
+                                                    borderSide: BorderSide(color: Colors.grey.shade300),
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(8),
+                                                    borderSide: BorderSide(color: Colors.grey.shade300),
+                                                  ),
+                                                ),
+                                                items: filteredStudents.map((doc) {
+                                                  final data = doc.data() as Map<String, dynamic>;
+                                                  String name = data['name'] ?? '';
+                                                  String roll = data['rollNo']?.toString() ?? '';
+                                                  return DropdownMenuItem(
+                                                    value: doc.id,
+                                                    child: Text(
+                                                      "$name ${roll.isNotEmpty ? '($roll)' : ''}",
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                                onChanged: (value) {
+                                                  final d = students.firstWhere((e) => e.id == value);
+                                                  final data = d.data() as Map<String, dynamic>;
+                                                  setState(() {
+                                                    block["studentId"] = value;
+                                                    block["studentName"] = data['name'];
+                                                  });
+                                                },
+                                              ),
+                                            ),
+
+                                            // 2. Subject Marks Cells
+                                            ...List.generate(
+                                              (block["subjects"] as List).length,
+                                              (j) {
+                                                var sub = block["subjects"][j];
+                                                return Container(
+                                                  width: 125,
+                                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                                                  decoration: BoxDecoration(
+                                                    border: Border(
+                                                      right: BorderSide(color: Colors.grey.shade200, width: 0.8),
+                                                      bottom: BorderSide(color: Colors.grey.shade200, width: 0.8),
+                                                    ),
+                                                  ),
+                                                  child: TextField(
+                                                    controller: sub["marks"],
+                                                    keyboardType: TextInputType.number,
+                                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                                    textAlign: TextAlign.center,
+                                                    decoration: InputDecoration(
+                                                      hintText: "0",
+                                                      isDense: true,
+                                                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                                      fillColor: Colors.white,
+                                                      filled: true,
+                                                      border: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(8),
+                                                        borderSide: BorderSide(color: Colors.grey.shade300),
+                                                      ),
+                                                      enabledBorder: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(8),
+                                                        borderSide: BorderSide(color: Colors.grey.shade300),
+                                                      ),
+                                                    ),
+                                                    onChanged: (_) => setState(() {}),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+
+                                            // 3. Total Cell
+                                            Container(
+                                              width: 80,
+                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  right: BorderSide(color: Colors.grey.shade200, width: 0.8),
+                                                  bottom: BorderSide(color: Colors.grey.shade200, width: 0.8),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                "${result['total']}",
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 13,
+                                                  color: Color(0xFF1E293B),
+                                                ),
+                                              ),
+                                            ),
+
+                                            // 4. % Cell
+                                            Container(
+                                              width: 85,
+                                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  right: BorderSide(color: Colors.grey.shade200, width: 0.8),
+                                                  bottom: BorderSide(color: Colors.grey.shade200, width: 0.8),
+                                                ),
+                                              ),
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFFDCFCE7),
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  border: Border.all(color: const Color(0xFF86EFAC)),
+                                                ),
+                                                child: Text(
+                                                  "${result['percent'].toStringAsFixed(1)}%",
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 11,
+                                                    color: Color(0xFF15803D),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+
+                                            // 5. Actions Cell (PDF & Delete Row)
+                                            Container(
+                                              width: 100,
+                                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  bottom: BorderSide(color: Colors.grey.shade200, width: 0.8),
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  IconButton(
+                                                    constraints: const BoxConstraints(),
+                                                    padding: const EdgeInsets.all(6),
+                                                    tooltip: "PDF Marksheet",
+                                                    icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.red, size: 20),
+                                                    onPressed: () {
+                                                      if (block["studentId"] == null) {
+                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                          const SnackBar(content: Text("Please select student first")),
+                                                        );
+                                                        return;
+                                                      }
+
+                                                      final selectedDoc = students.firstWhere(
+                                                        (e) => e.id == block["studentId"],
+                                                      );
+                                                      final userData = selectedDoc.data() as Map<String, dynamic>;
+
+                                                      final studentData = {
+                                                        "studentName": block["studentName"] ?? "",
+                                                        "father": userData['fatherName'] ?? "",
+                                                        "mother": userData['motherName'] ?? "",
+                                                        "class": userData['classSection'] ?? "",
+                                                        "rollNo": userData['rollNo'] ?? "",
+                                                        "admNo": userData['admNo'] ?? "",
+                                                        "dob": userData['dob'] ?? "",
+                                                        "photo": userData['photo'],
+                                                        "marks": {
+                                                          for (var sub in block["subjects"])
+                                                            sub["name"].text: int.tryParse(sub["marks"].text) ?? 0
+                                                        },
+                                                        "total": result["total"],
+                                                        "percent": result["percent"],
+                                                      };
+
+                                                      generateStudentPdf(studentData);
+                                                    },
+                                                  ),
+                                                  if (studentBlocks.length > 1)
+                                                    IconButton(
+                                                      constraints: const BoxConstraints(),
+                                                      padding: const EdgeInsets.all(6),
+                                                      tooltip: "Remove Row",
+                                                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.red, size: 20),
+                                                      onPressed: () => removeStudent(i),
+                                                    ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }),
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
-                      );
-                    }),
+                      ),
                   ],
                 ),
               ),
