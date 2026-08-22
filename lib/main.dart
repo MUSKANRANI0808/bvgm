@@ -2082,61 +2082,67 @@ class _DashboardPageState extends State<DashboardPage> {
                               const Text(
                                 'Overview',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 17,
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.text,
                                 ),
                               ),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // 🔷 FILTER MODE DROPDOWN (Day Wise vs Month Wise) FOR ADMIN & TEACHER
-                                  if (widget.role != UserRole.student) ...[
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 0),
-                                      height: 36,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.9),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: Colors.grey.shade300),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.04),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 3),
-                                          )
-                                        ],
-                                      ),
-                                      child: DropdownButton<String>(
-                                        value: attendanceFilterMode,
-                                        underline: const SizedBox(),
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFF0284C7),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  reverse: true,
+                                  physics: const BouncingScrollPhysics(),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      // 🔷 FILTER MODE DROPDOWN (Day Wise vs Month Wise) FOR ADMIN & TEACHER
+                                      if (widget.role != UserRole.student) ...[
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 0),
+                                          height: 36,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(0.9),
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(color: Colors.grey.shade300),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.04),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 3),
+                                              )
+                                            ],
+                                          ),
+                                          child: DropdownButton<String>(
+                                            value: attendanceFilterMode,
+                                            underline: const SizedBox(),
+                                            style: const TextStyle(
+                                              fontSize: 11.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: Color(0xFF0284C7),
+                                            ),
+                                            icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                                                size: 15, color: Color(0xFF0284C7)),
+                                            items: const [
+                                              DropdownMenuItem(
+                                                  value: "Day",
+                                                  child: Text("Day Wise")),
+                                              DropdownMenuItem(
+                                                  value: "Month",
+                                                  child: Text("Month Wise")),
+                                            ],
+                                            onChanged: (v) {
+                                              if (v != null) {
+                                                setState(() {
+                                                  attendanceFilterMode = v;
+                                                });
+                                              }
+                                            },
+                                          ),
                                         ),
-                                        icon: const Icon(Icons.keyboard_arrow_down_rounded,
-                                            size: 16, color: Color(0xFF0284C7)),
-                                        items: const [
-                                          DropdownMenuItem(
-                                              value: "Day",
-                                              child: Text("Day Wise")),
-                                          DropdownMenuItem(
-                                              value: "Month",
-                                              child: Text("Month Wise")),
-                                        ],
-                                        onChanged: (v) {
-                                          if (v != null) {
-                                            setState(() {
-                                              attendanceFilterMode = v;
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                  ],
+                                        const SizedBox(width: 5),
+                                      ],
 
                                   // 📅 DAY WISE: DATE PICKER BUTTON PILL
                                   if (widget.role != UserRole.student && attendanceFilterMode == "Day") ...[
