@@ -890,13 +890,21 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
                   // 🔷 PEEKING STUDENT BOY ILLUSTRATION OVER TOP EDGE OF WHITE CARD
                   Positioned(
-                    top: -38,
-                    right: 28,
+                    top: -42,
+                    right: 24,
                     child: Container(
-                      height: 76,
-                      width: 90,
-                      decoration: const BoxDecoration(
+                      height: 80,
+                      width: 80,
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF1E3A8A).withOpacity(0.18),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                       ),
                       child: ClipOval(
                         child: Image.asset(
