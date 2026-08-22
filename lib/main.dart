@@ -1479,15 +1479,25 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ],
                 ),
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 120),
+                child: Column(
                   children: [
-                    MasterpieceStudentBanner(
+                    // 📌 STICKY / FIXED TOP HEADER BAR
+                    MasterpieceHeaderBar(
                       roleName: roleName,
                       onLogout: widget.onLogout,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
+
+                    // 📜 SCROLLABLE DASHBOARD BODY
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 120),
+                        children: [
+                          MasterpieceStudentBanner(
+                            roleName: roleName,
+                            onLogout: null,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -2420,6 +2430,157 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
+class MasterpieceHeaderBar extends StatelessWidget {
+  final String roleName;
+  final Future<void> Function()? onLogout;
+
+  const MasterpieceHeaderBar({
+    super.key,
+    required this.roleName,
+    this.onLogout,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF0F172A),
+            Color(0xFF1E293B),
+            Color(0xFF0369A1),
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // 🎨 LOGO WITH GLOW BORDER
+          Container(
+            height: 38,
+            width: 38,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(11),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+              border: Border.all(
+                color: Colors.white.withOpacity(0.8),
+                width: 1.2,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset(
+                "assets/logo.png",
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(
+                  Icons.school_rounded,
+                  color: AppColors.primary,
+                  size: 22,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+
+          // 🏷️ SCHOOL NAME & ROLE DASHBOARD
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 👨‍💼 ROLE DASHBOARD PILL
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 1.5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.18),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.white.withOpacity(0.25)),
+                  ),
+                  child: Text(
+                    '${roleName} Dashboard'.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                // 🏫 SCHOOL NAME
+                const Text(
+                  'BAL VIKASH GYAN MANDIR',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: 0.1,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const Text(
+                  'RANIGANJ',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF38BDF8),
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 6),
+
+          // 🔘 ACTION BUTTON (LOGOUT)
+          if (onLogout != null)
+            InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: onLogout,
+              child: Container(
+                height: 36,
+                width: 36,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.white.withOpacity(0.25)),
+                ),
+                child: const Icon(
+                  Icons.logout_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class MasterpieceStudentBanner extends StatefulWidget {
   final String roleName;
   final VoidCallback? onLogout;
@@ -2549,7 +2710,8 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
   @override
   Widget build(BuildContext context) {
     final double topInset = MediaQuery.of(context).padding.top;
-    final double totalHeight = 245 + topInset;
+    final bool isCompact = widget.onLogout == null;
+    final double totalHeight = isCompact ? 172.0 : (245.0 + topInset);
 
     return Container(
       height: totalHeight,
@@ -2647,98 +2809,98 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
                       // 4. MAIN INTEGRATED LAYOUT: HEADER + STORY CONTENT
                       Column(
                         children: [
-                          // 🏛️ INTEGRATED TOP HEADER BAR
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(14, topInset + 6, 14, 0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                // 🎨 LOGO WITH GLOW BORDER
-                                Container(
-                                  height: 38,
-                                  width: 38,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(11),
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.2),
-                                        blurRadius: 6,
-                                        offset: const Offset(0, 2),
+                          if (widget.onLogout != null) ...[
+                            // 🏛️ INTEGRATED TOP HEADER BAR
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(14, topInset + 6, 14, 0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // 🎨 LOGO WITH GLOW BORDER
+                                  Container(
+                                    height: 38,
+                                    width: 38,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(11),
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                      border: Border.all(
+                                        color: Colors.white.withOpacity(0.8),
+                                        width: 1.2,
                                       ),
-                                    ],
-                                    border: Border.all(
-                                      color: Colors.white.withOpacity(0.8),
-                                      width: 1.2,
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.asset(
+                                        "assets/logo.png",
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Image.asset(
-                                      "assets/logo.png",
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
+                                  const SizedBox(width: 8),
 
-                                // 🏷️ SCHOOL NAME & ROLE DASHBOARD
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      // 👨‍💼 ROLE DASHBOARD PILL
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6,
-                                          vertical: 1.5,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.18),
-                                          borderRadius: BorderRadius.circular(6),
-                                          border: Border.all(color: Colors.white.withOpacity(0.25)),
-                                        ),
-                                        child: Text(
-                                          '${widget.roleName} Dashboard'.toUpperCase(),
-                                          style: const TextStyle(
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.w800,
-                                            color: Colors.white,
-                                            letterSpacing: 0.5,
+                                  // 🏷️ SCHOOL NAME & ROLE DASHBOARD
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        // 👨‍💼 ROLE DASHBOARD PILL
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 1.5,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(0.18),
+                                            borderRadius: BorderRadius.circular(6),
+                                            border: Border.all(color: Colors.white.withOpacity(0.25)),
+                                          ),
+                                          child: Text(
+                                            '${widget.roleName} Dashboard'.toUpperCase(),
+                                            style: const TextStyle(
+                                              fontSize: 8,
+                                              fontWeight: FontWeight.w800,
+                                              color: Colors.white,
+                                              letterSpacing: 0.5,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      // 🏫 SCHOOL NAME
-                                      const Text(
-                                        'BAL VIKASH GYAN MANDIR',
-                                        style: TextStyle(
-                                          fontSize: 12.5,
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.white,
-                                          letterSpacing: 0.1,
+                                        const SizedBox(height: 2),
+                                        // 🏫 SCHOOL NAME
+                                        const Text(
+                                          'BAL VIKASH GYAN MANDIR',
+                                          style: TextStyle(
+                                            fontSize: 12.5,
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.white,
+                                            letterSpacing: 0.1,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Text(
-                                        'RANIGANJ',
-                                        style: TextStyle(
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w900,
-                                          color: accentColor,
-                                          letterSpacing: 0.8,
+                                        Text(
+                                          'RANIGANJ',
+                                          style: TextStyle(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w900,
+                                            color: accentColor,
+                                            letterSpacing: 0.8,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
 
-                                const SizedBox(width: 6),
+                                  const SizedBox(width: 6),
 
-                                // 🔘 ACTION BUTTON (LOGOUT)
-                                if (widget.onLogout != null)
+                                  // 🔘 ACTION BUTTON (LOGOUT)
                                   InkWell(
                                     borderRadius: BorderRadius.circular(10),
                                     onTap: widget.onLogout,
@@ -2757,16 +2919,19 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
                                       ),
                                     ),
                                   ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
 
-                          // ➖ SUBTLE GLASS DIVIDER LINE
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                            height: 1,
-                            color: Colors.white.withOpacity(0.15),
-                          ),
+                            // ➖ SUBTLE GLASS DIVIDER LINE
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              height: 1,
+                              color: Colors.white.withOpacity(0.15),
+                            ),
+                          ] else ...[
+                            const SizedBox(height: 10),
+                          ],
 
                           // 📖 STORY CONTENT AREA
                           Expanded(
