@@ -8678,7 +8678,6 @@ class _AdminAttendanceReportPageState extends State<AdminAttendanceReportPage> {
                 ],
               ),
             ),
-          );
     );
   }
 }
