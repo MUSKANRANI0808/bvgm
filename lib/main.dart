@@ -1922,7 +1922,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ),
             ),
-          ],
         ),
       ),
     ),
@@ -2642,6 +2641,7 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
 
   @override
   Widget build(BuildContext context) {
+    final double topInset = MediaQuery.of(context).padding.top;
     return SizedBox(
       height: 250.0,
       child: PageView.builder(
@@ -3049,8 +3049,7 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
             );
           },
         ),
-      ),
-    );
+      );
   }
 }
 
