@@ -963,8 +963,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 }
 
-}
-
 class _AnimatedWelcomeIllustration extends StatelessWidget {
   final AnimationController floatController;
   final Animation<double> floatAnimation;
