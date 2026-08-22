@@ -18,12 +18,22 @@
 
   <title>Bal Vikash Gyan Mandir</title>
   <link rel="manifest" href="manifest.json">
+  <script src="flutter.js" defer></script>
 </head>
 <body style="overflow: hidden; margin: 0; padding: 0; background-color: #F8FAFC;">
   <div id="loading" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; color: #0B3C91; font-family: system-ui, -apple-system, sans-serif;">
     <div style="font-size: 24px; font-weight: bold; margin-bottom: 12px;">BAL VIKASH GYAN MANDIR</div>
     <div style="font-size: 14px; color: #64748B;">Loading Application...</div>
   </div>
-  <script src="flutter_bootstrap.js" async></script>
+  <script>
+    window.addEventListener('load', function(ev) {
+      _flutter.loader.load({
+        onEntrypointLoaded: async function(engineInitializer) {
+          const appRunner = await engineInitializer.initializeEngine();
+          await appRunner.runApp();
+        }
+      });
+    });
+  </script>
 </body>
 </html>
