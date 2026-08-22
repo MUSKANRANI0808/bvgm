@@ -888,31 +888,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     ),
                   ),
 
-                  // 🔷 PEEKING STUDENT BOY ILLUSTRATION OVER TOP EDGE OF WHITE CARD
+                  // 🔷 PEEKING STUDENT BOY ILLUSTRATION OVER TOP EDGE OF WHITE CARD (NO WHITE CIRCLE)
                   Positioned(
-                    top: -42,
-                    right: 24,
-                    child: Container(
-                      height: 80,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF1E3A8A).withOpacity(0.18),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          "assets/student_peeking.png",
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const SizedBox(),
-                        ),
-                      ),
+                    top: -48,
+                    right: 20,
+                    child: Image.asset(
+                      "assets/student_peeking.png",
+                      height: 85,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const SizedBox(),
                     ),
                   ),
                 ],
