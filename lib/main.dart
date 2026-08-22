@@ -555,11 +555,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     // 🔷 SCHOOL BRANDING HEADER CONTENT
                     SafeArea(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                         child: Column(
                           children: [
-                            const SizedBox(height: 10),
-                            // Logo Badge with Circular Glow
+                            const SizedBox(height: 6),
+                            // 1. Logo Badge (Centered)
                             Container(
                               width: 64,
                               height: 64,
@@ -589,32 +589,43 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 8),
+
+                            // 2. BVGM BOLD
                             const Text(
-                              "BAL VIKASH GYAN MANDIR",
+                              "BVGM",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 26,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.white,
-                                letterSpacing: 0.8,
+                                letterSpacing: 1.5,
                               ),
                             ),
                             const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Text(
-                                "RANIGANJ • ARARIA",
+
+                            // 3. PARAGRAPH WITH HIGHLIGHTED SCHOOL NAME
+                            RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
                                 style: TextStyle(
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                  letterSpacing: 0.6,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white.withOpacity(0.92),
+                                  height: 1.3,
                                 ),
+                                children: const [
+                                  TextSpan(text: "Welcome To "),
+                                  TextSpan(
+                                    text: "Bal Vikash Gyan Mandir",
+                                    style: TextStyle(
+                                      color: Color(0xFFFDE047), // ✨ Golden Yellow Highlight!
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 13.5,
+                                    ),
+                                  ),
+                                  TextSpan(text: ", Raniganj"),
+                                ],
                               ),
                             ),
                           ],
@@ -630,7 +641,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           // 🔷 2. MAIN LOGIN FORM SHEET CARD
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(top: 210, left: 12, right: 12, bottom: 20),
+              padding: const EdgeInsets.only(top: 195, left: 12, right: 12, bottom: 20),
               child: FadeTransition(
                 opacity: _fadeAnimation,
                 child: SlideTransition(
