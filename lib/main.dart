@@ -2463,7 +2463,7 @@ class _MasterpieceBannerHeaderDelegate extends SliverPersistentHeaderDelegate {
   });
 
   @override
-  double get minExtent => topInset + 78.0;
+  double get minExtent => topInset + 54.0;
 
   @override
   double get maxExtent => topInset + 245.0;
