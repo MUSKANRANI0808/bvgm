@@ -890,7 +890,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
                   // 🔷 PEEKING STUDENT BOY ILLUSTRATION OVER TOP EDGE OF WHITE CARD
                   Positioned(
-                    top: -38,
+                    top: -28,
                     right: 16,
                     child: Image.asset(
                       "assets/student_peeking.png",
