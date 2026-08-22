@@ -630,17 +630,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           // 🔷 2. MAIN LOGIN FORM SHEET CARD
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(top: 210, left: 16, right: 16, bottom: 20),
+              padding: const EdgeInsets.only(top: 210, left: 12, right: 12, bottom: 20),
               child: FadeTransition(
                 opacity: _fadeAnimation,
                 child: SlideTransition(
                   position: _slideAnimation,
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(22),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(28),
+                      borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
                           color: const Color(0xFF1E3A8A).withOpacity(0.10),
@@ -653,34 +653,42 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // Card Header
-                        const Text(
-                          'Sign In',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w900,
-                            color: Color(0xFF0F172A),
-                            letterSpacing: 0.2,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Select Session Year & enter credentials to continue',
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF64748B),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Sign In',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFF0F172A),
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                              SizedBox(height: 3),
+                              Text(
+                                'Select Session Year & enter credentials to continue',
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF64748B),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
 
-                        // 🔷 ACADEMIC SESSION YEAR SELECTOR
+                        // 🔷 ACADEMIC SESSION YEAR SELECTOR (FULL WIDTH NEAR EDGES)
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
                           decoration: BoxDecoration(
                             color: const Color(0xFFF8FAFC),
-                            borderRadius: BorderRadius.circular(18),
+                            borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: const Color(0xFFE2E8F0)),
                           ),
                           child: Row(
@@ -719,15 +727,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
 
-                        // 🔷 INPUT FIELDS
+                        // 🔷 INPUT FIELDS (COMPACT HEIGHT & WIDE FIT)
                         buildField(
                           controller: userCtrl,
                           hint: 'Mobile / Email / User ID',
                           icon: Icons.person_outline_rounded,
                         ),
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 10),
                         buildField(
                           controller: passCtrl,
                           hint: 'Password',
@@ -744,11 +752,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                   ? Icons.visibility_off_outlined
                                   : Icons.visibility_outlined,
                               color: const Color(0xFF64748B),
+                              size: 20,
                             ),
                           ),
                         ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
 
                         // 🔷 GRADIENT LOGIN BUTTON
                         SizedBox(
@@ -756,13 +765,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              borderRadius: BorderRadius.circular(18),
+                              borderRadius: BorderRadius.circular(16),
                               onTap: loading ? null : _login,
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
-                                height: 54,
+                                height: 48,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(18),
+                                  borderRadius: BorderRadius.circular(16),
                                   gradient: const LinearGradient(
                                     colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
                                     begin: Alignment.centerLeft,
@@ -771,16 +780,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                   boxShadow: [
                                     BoxShadow(
                                       color: const Color(0xFF2563EB).withOpacity(0.35),
-                                      blurRadius: 18,
-                                      offset: const Offset(0, 8),
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 6),
                                     ),
                                   ],
                                 ),
                                 child: Center(
                                   child: loading
                                       ? const SizedBox(
-                                          height: 22,
-                                          width: 22,
+                                          height: 20,
+                                          width: 20,
                                           child: CircularProgressIndicator(
                                             strokeWidth: 2.5,
                                             color: Colors.white,
@@ -793,13 +802,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                               'Sign In',
                                               style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 16.5,
+                                                fontSize: 16,
                                                 fontWeight: FontWeight.w800,
                                                 letterSpacing: 0.4,
                                               ),
                                             ),
                                             SizedBox(width: 8),
-                                            Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 20),
+                                            Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 19),
                                           ],
                                         ),
                                 ),
@@ -808,7 +817,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           ),
                         ),
 
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
 
                         // 🔷 FORGOT PASSWORD
                         Align(
@@ -825,33 +834,33 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                               style: TextStyle(
                                 color: Color(0xFF2563EB),
                                 fontWeight: FontWeight.w700,
-                                fontSize: 13,
+                                fontSize: 12.5,
                               ),
                             ),
                           ),
                         ),
 
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
 
                         // 🔷 INFO ALERT BOX
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           decoration: BoxDecoration(
                             color: const Color(0xFFEFF6FF),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(14),
                             border: Border.all(color: const Color(0xFFBFDBFE)),
                           ),
                           child: const Row(
                             children: [
-                              Icon(Icons.info_outline_rounded, color: Color(0xFF2563EB), size: 18),
-                              SizedBox(width: 10),
+                              Icon(Icons.info_outline_rounded, color: Color(0xFF2563EB), size: 17),
+                              SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   'Use registered User ID, Email, or Mobile to login.',
                                   style: TextStyle(
                                     color: Color(0xFF1E40AF),
-                                    fontSize: 12,
+                                    fontSize: 11.5,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -881,14 +890,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: TextField(
         controller: controller,
         obscureText: obscure,
         style: const TextStyle(
-          fontSize: 14.5,
+          fontSize: 14,
           fontWeight: FontWeight.w600,
           color: Color(0xFF1E293B),
         ),
@@ -896,26 +905,26 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           filled: true,
           fillColor: const Color(0xFFF8FAFC),
           prefixIcon: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Icon(icon, color: const Color(0xFF2563EB), size: 21),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Icon(icon, color: const Color(0xFF2563EB), size: 20),
           ),
           suffixIcon: suffix,
           hintText: hint,
-          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13.5, fontWeight: FontWeight.w500),
+          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13, fontWeight: FontWeight.w500),
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
+            horizontal: 14,
+            vertical: 11,
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
             borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.8),
           ),
         ),
