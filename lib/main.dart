@@ -318,6 +318,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Bal Vikash Gyan Mandir',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.trackpad,
+          PointerDeviceKind.stylus,
+        },
+      ),
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: const Color(0xfff6f9ff),
@@ -13127,11 +13135,20 @@ class _AddExamPageState extends State<AddExamPage> {
 
                             const Divider(height: 1),
 
-                            // 2. HORIZONTALLY SCROLLABLE FINGER-SWIPE TABLE
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              physics: const BouncingScrollPhysics(),
-                              child: IntrinsicWidth(
+                            // 2. HORIZONTALLY SCROLLABLE FINGER-SWIPE & MOUSE-DRAG TABLE
+                            ScrollConfiguration(
+                              behavior: ScrollConfiguration.of(context).copyWith(
+                                dragDevices: {
+                                  PointerDeviceKind.touch,
+                                  PointerDeviceKind.mouse,
+                                  PointerDeviceKind.trackpad,
+                                  PointerDeviceKind.stylus,
+                                },
+                              ),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                physics: const BouncingScrollPhysics(),
+                                child: IntrinsicWidth(
                                 child: Column(
                                   children: [
                                     // 🔷 TABLE HEADER ROW
@@ -13502,9 +13519,10 @@ class _AddExamPageState extends State<AddExamPage> {
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
+                    ),
                   ],
                 ),
               ),
