@@ -13128,7 +13128,7 @@ class _AddExamPageState extends State<AddExamPage> {
 
                                           // Action Header
                                           Container(
-                                            width: 100,
+                                            width: 115,
                                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
@@ -13308,8 +13308,8 @@ class _AddExamPageState extends State<AddExamPage> {
 
                                             // 5. Actions Cell (PDF & Delete Row)
                                             Container(
-                                              width: 100,
-                                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                              width: 115,
+                                              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
                                               alignment: Alignment.center,
                                               decoration: BoxDecoration(
                                                 border: Border(
@@ -13318,12 +13318,14 @@ class _AddExamPageState extends State<AddExamPage> {
                                               ),
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   IconButton(
                                                     constraints: const BoxConstraints(),
-                                                    padding: const EdgeInsets.all(6),
+                                                    padding: const EdgeInsets.all(4),
+                                                    visualDensity: VisualDensity.compact,
                                                     tooltip: "PDF Marksheet",
-                                                    icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.red, size: 20),
+                                                    icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.red, size: 19),
                                                     onPressed: () {
                                                       if (block["studentId"] == null) {
                                                         ScaffoldMessenger.of(context).showSnackBar(
@@ -13357,14 +13359,17 @@ class _AddExamPageState extends State<AddExamPage> {
                                                       generateStudentPdf(studentData);
                                                     },
                                                   ),
-                                                  if (studentBlocks.length > 1)
+                                                  if (studentBlocks.length > 1) ...[
+                                                    const SizedBox(width: 4),
                                                     IconButton(
                                                       constraints: const BoxConstraints(),
-                                                      padding: const EdgeInsets.all(6),
+                                                      padding: const EdgeInsets.all(4),
+                                                      visualDensity: VisualDensity.compact,
                                                       tooltip: "Remove Row",
-                                                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.red, size: 20),
+                                                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.red, size: 19),
                                                       onPressed: () => removeStudent(i),
                                                     ),
+                                                  ],
                                                 ],
                                               ),
                                             ),
