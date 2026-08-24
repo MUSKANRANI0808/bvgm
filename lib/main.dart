@@ -3855,7 +3855,7 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
 
               // 3. CONCEPT-SPECIFIC HIGH-END 3D EMBLEM & DYNAMIC PARTICLES
               if (widget.storyIndex == 0) ...[
-                // 📚 1. EDUCATION: TRANSPARENT ANIMATED VECTOR STUDY SCENE (NO WHITE CARD BOX)
+                // 📚 1. EDUCATION: USER'S "Exams Preparation" LOTTIE ANIMATION
                 SizedBox(
                   width: 185,
                   height: 165,
@@ -3873,8 +3873,8 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                             shape: BoxShape.circle,
                             gradient: RadialGradient(
                               colors: [
-                                const Color(0xFF60A5FA).withOpacity(0.35),
-                                const Color(0xFF2563EB).withOpacity(0.12),
+                                widget.accentColor.withOpacity(0.35),
+                                widget.accentColor.withOpacity(0.1),
                                 Colors.transparent,
                               ],
                             ),
@@ -3882,16 +3882,19 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                         ),
                       ),
 
-                      // Pure Vector Animated Study Illustration Painter (Direct on Banner Background)
-                      CustomPaint(
-                        size: const Size(185, 165),
-                        painter: EducationVectorScenePainter(
-                          spinAngle: spinVal,
-                          swayAngle: sin(driveVal * 2 * pi) * 0.14,
-                          boyArmAngle: -0.25 + sin(driveVal * 2 * pi) * 0.25,
-                          boyHeadAngle: sin(driveVal * 2 * pi) * 0.09,
-                          girlHeadAngle: sin((driveVal * 2 * pi) + 1.2) * 0.10,
-                        ),
+                      // User's Exams Preparation Lottie Animation
+                      Lottie.asset(
+                        "assets/exams_preparation.json",
+                        width: 180,
+                        height: 160,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            widget.mainIcon,
+                            color: Colors.white,
+                            size: 60,
+                          );
+                        },
                       ),
 
                       // Upward Floating Knowledge Particles
