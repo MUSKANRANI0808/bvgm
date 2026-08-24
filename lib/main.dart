@@ -15615,9 +15615,62 @@ class _StudentReportPageState extends State<StudentReportPage> {
                                 ),
                                 child: Row(
                                   children: [
-                                    CircleAvatar(
-                                      backgroundColor: Colors.blue.shade50,
-                                      child: Text("${index + 1}"),
+                                    // 📞 CALL BUTTON (TAP TO CALL STUDENT MOBILE DIRECTLY)
+                                    Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(22),
+                                        onTap: () async {
+                                          final String mobile = (data['mobile'] ?? "").toString().trim();
+                                          if (mobile.isNotEmpty) {
+                                            final Uri url = Uri.parse("tel:$mobile");
+                                            if (await canLaunchUrl(url)) {
+                                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                                            } else {
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(content: Text("Cannot dial $mobile")),
+                                                );
+                                              }
+                                            }
+                                          } else {
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(content: Text("Mobile number not available")),
+                                              );
+                                            }
+                                          }
+                                        },
+                                        child: Container(
+                                          height: 44,
+                                          width: 44,
+                                          decoration: BoxDecoration(
+                                            gradient: const LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                              colors: [
+                                                Color(0xFF10B981), // Emerald Green
+                                                Color(0xFF059669),
+                                              ],
+                                            ),
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: const Color(0xFF10B981).withOpacity(0.35),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 3),
+                                              ),
+                                            ],
+                                          ),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.phone_in_talk_rounded,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                     const SizedBox(width: 10),
                                     Expanded(
@@ -17041,20 +17094,7 @@ class StudentFeeHistoryPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        automaticallyImplyLeading: ModalRoute.of(context)?.canPop ?? false,
-        title: Text(
-          studentName,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-            fontSize: 20,
-            letterSpacing: 0.3,
-          ),
-        ),
-        centerTitle: false,
-        elevation: 6,
-        shadowColor: const Color(0xFF0F172A).withOpacity(0.5),
-        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -17062,18 +17102,55 @@ class StudentFeeHistoryPage extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: [
                 Color(0xFF0F172A),
-                Color(0xFF1E293B),
-                Color(0xFF334155),
+                Color(0xFF1E3A8A),
+                Color(0xFF2563EB),
               ],
             ),
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              studentName,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: 0.2,
+              ),
+            ),
+            const Text(
+              "FEE STATEMENT & TRANSACTIONS",
+              style: TextStyle(
+                fontSize: 8.5,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFFFBBF24),
+                letterSpacing: 0.8,
+              ),
+            ),
+          ],
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.white),
+            icon: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.18),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white.withOpacity(0.25)),
+              ),
+              child: const Icon(Icons.picture_as_pdf_rounded, color: Colors.white, size: 18),
+            ),
             onPressed: () => exportPdf(context),
             tooltip: "Export PDF",
-          )
+          ),
+          const SizedBox(width: 6),
         ],
       ),
 
