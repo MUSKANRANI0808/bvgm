@@ -16582,26 +16582,28 @@ class _PDFPageState extends State<PDFPage> {
                                   ),
                                   SizedBox(height: 6),
                                   Text(data['desc'] ?? ""),
-                                  SizedBox(height: 8),
-                                  Wrap(
-                                    spacing: 6,
-                                    children: (data['classes'] ?? [])
-                                        .map<Widget>((cls) {
-                                      return Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue.withOpacity(0.1),
-                                          borderRadius:
-                                          BorderRadius.circular(12),
-                                        ),
-                                        child: Text(cls,
-                                            style: TextStyle(
-                                                fontSize: 11,
-                                                color: Colors.blue)),
-                                      );
-                                    }).toList(),
-                                  ),
+                                  if (userRole != "student") ...[
+                                    SizedBox(height: 8),
+                                    Wrap(
+                                      spacing: 6,
+                                      children: (data['classes'] ?? [])
+                                          .map<Widget>((cls) {
+                                        return Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.withOpacity(0.1),
+                                            borderRadius:
+                                            BorderRadius.circular(12),
+                                          ),
+                                          child: Text(cls,
+                                              style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: Colors.blue)),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
@@ -17008,25 +17010,28 @@ class _VideoPageState extends State<VideoPage> {
                             SizedBox(height: 6),
                             Text(data['desc'] ?? ""),
                             SizedBox(height: 8),
-                            Wrap(
-                              spacing: 6,
-                              children:
-                              (data['classes'] ?? []).map<Widget>((cls) {
-                                return Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    cls,
-                                    style: TextStyle(
-                                        fontSize: 11, color: Colors.blue),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
+                            if (userRole != "student") ...[
+                              SizedBox(height: 8),
+                              Wrap(
+                                spacing: 6,
+                                children:
+                                (data['classes'] ?? []).map<Widget>((cls) {
+                                  return Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      cls,
+                                      style: TextStyle(
+                                          fontSize: 11, color: Colors.blue),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
                           ],
                         ),
                       ),
