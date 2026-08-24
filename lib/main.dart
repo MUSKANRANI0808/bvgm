@@ -15796,10 +15796,64 @@ class LibraryPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xFFF5F7FB),
       appBar: AppBar(
-        title: Text("Library"),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF0F172A),
+                Color(0xFF1E3A8A),
+                Color(0xFF2563EB),
+              ],
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Library",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: 0.2,
+              ),
+            ),
+            Text(
+              "DIGITAL LEARNING & RESOURCES",
+              style: TextStyle(
+                fontSize: 8.5,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFFFBBF24),
+                letterSpacing: 0.8,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.all(7),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white.withOpacity(0.25)),
+            ),
+            child: const Icon(
+              Icons.local_library_rounded,
+              color: Colors.white,
+              size: 18,
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
@@ -16340,32 +16394,64 @@ class _PDFPageState extends State<PDFPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "PDF Section",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-            fontSize: 21,
-            letterSpacing: 0.3,
-          ),
-        ),
-        centerTitle: false,
-        elevation: 6,
-        shadowColor: const Color(0xFF2E073F).withOpacity(0.5),
-        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF2E073F), // Ultra Deep Midnight Purple
-                Color(0xFF3B0764), // Deep Baingani / Violet
-                Color(0xFF581C87), // Rich Dark Royal Baingani
+                Color(0xFF0F172A),
+                Color(0xFF1E3A8A),
+                Color(0xFF2563EB),
               ],
             ),
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "PDF Section",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: 0.2,
+              ),
+            ),
+            Text(
+              "STUDY MATERIALS & E-BOOKS",
+              style: TextStyle(
+                fontSize: 8.5,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFFFBBF24),
+                letterSpacing: 0.8,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.all(7),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white.withOpacity(0.25)),
+            ),
+            child: const Icon(
+              Icons.picture_as_pdf_rounded,
+              color: Colors.white,
+              size: 18,
+            ),
+          ),
+        ],
       ),
       floatingActionButton: userRole == "student"
           ? null
@@ -16761,32 +16847,64 @@ class _VideoPageState extends State<VideoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Video Section",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-            fontSize: 21,
-            letterSpacing: 0.3,
-          ),
-        ),
-        centerTitle: false,
-        elevation: 6,
-        shadowColor: const Color(0xFF881337).withOpacity(0.5),
-        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF4C0519), // Ultra Deep Rose Midnight
-                Color(0xFF881337), // Deep Crimson Ruby Red
-                Color(0xFFBE123C), // Vibrant Rose Crimson
+                Color(0xFF0F172A),
+                Color(0xFF1E3A8A),
+                Color(0xFF2563EB),
               ],
             ),
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Video Section",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: 0.2,
+              ),
+            ),
+            Text(
+              "VIDEO LECTURES & TUTORIALS",
+              style: TextStyle(
+                fontSize: 8.5,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFFFBBF24),
+                letterSpacing: 0.8,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.all(7),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white.withOpacity(0.25)),
+            ),
+            child: const Icon(
+              Icons.play_circle_fill_rounded,
+              color: Colors.white,
+              size: 18,
+            ),
+          ),
+        ],
       ),
 
       floatingActionButton: userRole == "student"
