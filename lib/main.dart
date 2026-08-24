@@ -3988,63 +3988,52 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                   ],
                 ),
               ] else ...[
-                // 🏆 4. SUCCESS: 360° GOLDEN SUNBURST, GOLDEN TROPHY & FLOATING CROWN
-                Stack(
-                  alignment: Alignment.center,
-                  clipBehavior: Clip.none,
-                  children: [
-                    // Rotating Golden Sunburst Rays
-                    Transform.rotate(
-                      angle: spinVal * 0.5,
-                      child: Icon(
-                        Icons.brightness_7_rounded,
-                        color: const Color(0xFFFFD700).withOpacity(0.35),
-                        size: 82,
-                      ),
-                    ),
-                    // Floating Golden Victory Stars & Confetti
-                    ...List.generate(4, (i) {
-                      final dy = -((driveVal + (i * 0.25)) % 1.0) * 44;
-                      final dx = sin((driveVal * 2 * pi) + i) * 10;
-                      final op = (1.0 - ((driveVal + (i * 0.25)) % 1.0)).clamp(0.0, 1.0);
-                      final List<String> victoryItems = ["⭐", "✨", "👑", "🎉"];
-                      return Positioned(
-                        top: 24 + dy,
-                        left: 10.0 + dx + (i * 20),
-                        child: Opacity(
-                          opacity: op,
-                          child: Text(
-                            victoryItems[i % victoryItems.length],
-                            style: const TextStyle(fontSize: 13),
+                // 🏆 4. SUCCESS: USER'S "Successful target.json" LOTTIE ANIMATION (HUGE & TRANSPARENT BACKDROP)
+                SizedBox(
+                  width: 250,
+                  height: 210,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Ambient Golden Glow Backdrop Orb
+                      Transform.scale(
+                        scale: pulseVal * 1.35,
+                        child: Container(
+                          width: 210,
+                          height: 185,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                const Color(0xFFFFD700).withOpacity(0.30),
+                                widget.accentColor.withOpacity(0.08),
+                                Colors.transparent,
+                              ],
+                            ),
                           ),
                         ),
-                      );
-                    }),
-                    // Center Golden Trophy Emblem
-                    Transform.scale(
-                      scale: pulseVal,
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFF0F172A).withOpacity(0.7),
-                          border: Border.all(color: const Color(0xFFFFD700), width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFFFFD700).withOpacity(0.4),
-                              blurRadius: 20,
-                              spreadRadius: 3,
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          widget.mainIcon,
-                          color: const Color(0xFFFFD700),
-                          size: 48,
+                      ),
+
+                      // User's Successful Target Lottie Animation (Enlarged & Transparent Background)
+                      Transform.scale(
+                        scale: 1.5,
+                        child: Lottie.asset(
+                          "assets/successful_target.json",
+                          width: 240,
+                          height: 200,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              widget.mainIcon,
+                              color: const Color(0xFFFFD700),
+                              size: 70,
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ],
