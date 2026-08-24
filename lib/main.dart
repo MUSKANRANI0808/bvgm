@@ -3855,54 +3855,19 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
 
               // 3. CONCEPT-SPECIFIC HIGH-END 3D EMBLEM & DYNAMIC PARTICLES
               if (widget.storyIndex == 0) ...[
-                // 📚 1. EDUCATION: 3D OPEN BOOK & UPWARD KNOWLEDGE PARTICLES
-                Stack(
-                  alignment: Alignment.center,
-                  clipBehavior: Clip.none,
-                  children: [
-                    // Upward floating luminous particles
-                    ...List.generate(4, (i) {
-                      final dy = -((driveVal + (i * 0.25)) % 1.0) * 42;
-                      final dx = sin((driveVal * 2 * pi) + i) * 12;
-                      final op = (1.0 - ((driveVal + (i * 0.25)) % 1.0)).clamp(0.0, 1.0);
-                      final List<String> symbols = ["✨", "💡", "📚", "⭐"];
-                      return Positioned(
-                        top: 30 + dy,
-                        left: 20.0 + dx + (i * 18),
-                        child: Opacity(
-                          opacity: op,
-                          child: Text(
-                            symbols[i % symbols.length],
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                        ),
-                      );
-                    }),
-                    // Center Glowing Book Emblem
-                    Transform.scale(
-                      scale: pulseVal,
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFF0F172A).withOpacity(0.6),
-                          border: Border.all(color: widget.accentColor.withOpacity(0.6), width: 1.8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: widget.accentColor.withOpacity(0.3),
-                              blurRadius: 16,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          widget.mainIcon,
-                          color: Colors.white,
-                          size: 46,
-                        ),
-                      ),
+                // 📚 1. EDUCATION: ANIMATED VECTOR STUDY SCENE (ROTATING GEAR, SWAYING LEAVES, BOY HEAD/HAND MOVING, GIRL HEAD MOVING)
+                SizedBox(
+                  width: 155,
+                  height: 135,
+                  child: CustomPaint(
+                    painter: EducationVectorScenePainter(
+                      spinAngle: spinVal,
+                      swayAngle: sin(driveVal * 2 * pi) * 0.12,
+                      boyArmAngle: -0.2 + sin(driveVal * 2 * pi) * 0.22,
+                      boyHeadAngle: sin(driveVal * 2 * pi) * 0.08,
+                      girlHeadAngle: sin((driveVal * 2 * pi) + 1.2) * 0.09,
                     ),
-                  ],
+                  ),
                 ),
               ] else if (widget.storyIndex == 1) ...[
                 // 🛡️ 2. DISCIPLINE: 3D METALLIC SHIELD & TICKING PRECISION RADAR
@@ -4086,6 +4051,231 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
         );
       },
     );
+  }
+}
+
+class EducationVectorScenePainter extends CustomPainter {
+  final double spinAngle;
+  final double swayAngle;
+  final double boyArmAngle;
+  final double boyHeadAngle;
+  final double girlHeadAngle;
+
+  EducationVectorScenePainter({
+    required this.spinAngle,
+    required this.swayAngle,
+    required this.boyArmAngle,
+    required this.boyHeadAngle,
+    required this.girlHeadAngle,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double w = size.width;
+    final double h = size.height;
+
+    // 1. BACKGROUND AMBIENT ORGANIC BLOB SHAPE
+    final Paint blobPaint = Paint()
+      ..color = Colors.white.withOpacity(0.18)
+      ..style = PaintingStyle.fill;
+
+    final Path blobPath = Path()
+      ..moveTo(w * 0.15, h * 0.5)
+      ..cubicTo(w * 0.15, h * 0.2, w * 0.4, h * 0.15, w * 0.65, h * 0.25)
+      ..cubicTo(w * 0.9, h * 0.35, w * 0.95, h * 0.75, w * 0.7, h * 0.9)
+      ..cubicTo(w * 0.45, h * 1.05, w * 0.1, h * 0.85, w * 0.15, h * 0.5)
+      ..close();
+    canvas.drawPath(blobPath, blobPaint);
+
+    // 2. ROTATING BLUE GEAR WHEEL (Top Center: x = w * 0.42, y = h * 0.28)
+    canvas.save();
+    canvas.translate(w * 0.42, h * 0.28);
+    canvas.rotate(spinAngle);
+
+    final Paint gearPaint = Paint()
+      ..color = const Color(0xFF1D4ED8)
+      ..style = PaintingStyle.fill;
+
+    const double outerR = 24.0;
+    const double innerR = 17.0;
+    const int teeth = 8;
+    final Path gearPath = Path();
+
+    for (int i = 0; i < teeth; i++) {
+      double angle1 = (i * 2 * pi / teeth);
+      double angle2 = angle1 + (pi / (teeth * 2));
+      double angle3 = angle1 + (pi / teeth);
+
+      if (i == 0) {
+        gearPath.moveTo(outerR * cos(angle1), outerR * sin(angle1));
+      } else {
+        gearPath.lineTo(outerR * cos(angle1), outerR * sin(angle1));
+      }
+      gearPath.lineTo(outerR * cos(angle2), outerR * sin(angle2));
+      gearPath.lineTo(innerR * cos(angle2), innerR * sin(angle2));
+      gearPath.lineTo(innerR * cos(angle3), innerR * sin(angle3));
+    }
+    gearPath.close();
+    canvas.drawPath(gearPath, gearPaint);
+
+    // Inner Hole of Gear Wheel
+    final Paint gearHolePaint = Paint()
+      ..color = const Color(0xFF0F172A)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(Offset.zero, 8.0, gearHolePaint);
+
+    final Paint gearInnerRingPaint = Paint()
+      ..color = const Color(0xFF60A5FA)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+    canvas.drawCircle(Offset.zero, 12.0, gearInnerRingPaint);
+    canvas.restore();
+
+    // 3. SWAYING BACKGROUND LEAVES (Top Right: x = w * 0.76, y = h * 0.28)
+    canvas.save();
+    canvas.translate(w * 0.76, h * 0.28);
+    canvas.rotate(swayAngle);
+
+    // Leaf 1: Coral Orange Leaf
+    final Path leaf1 = Path()
+      ..moveTo(0, 0)
+      ..quadraticBezierTo(20, -35, 12, -48)
+      ..quadraticBezierTo(-10, -32, 0, 0);
+    final Paint leafPaint1 = Paint()..color = const Color(0xFFF97316);
+    canvas.drawPath(leaf1, leafPaint1);
+
+    // Leaf 2: Violet Leaf
+    canvas.save();
+    canvas.rotate(0.3);
+    final Path leaf2 = Path()
+      ..moveTo(5, -5)
+      ..quadraticBezierTo(25, -30, 20, -40)
+      ..quadraticBezierTo(0, -28, 5, -5);
+    final Paint leafPaint2 = Paint()..color = const Color(0xFFA855F7);
+    canvas.drawPath(leaf2, leafPaint2);
+    canvas.restore();
+
+    canvas.restore();
+
+    // 4. STACK OF 4 GIANT COLORFUL TEXTBOOKS (Right Side: x = w * 0.54, y = h * 0.52 to h * 0.92)
+    final double bx = w * 0.54;
+    final double bw = w * 0.38;
+
+    // Book 1 (Bottom - Navy)
+    final Paint book1Paint = Paint()..color = const Color(0xFF1E1B4B);
+    final RRect book1 = RRect.fromLTRBR(bx, h * 0.82, bx + bw, h * 0.92, const Radius.circular(5));
+    canvas.drawRRect(book1, book1Paint);
+    final Paint page1Paint = Paint()..color = Colors.white.withOpacity(0.9);
+    canvas.drawRRect(RRect.fromLTRBR(bx + 4, h * 0.84, bx + bw - 6, h * 0.90, const Radius.circular(3)), page1Paint);
+
+    // Book 2 (Middle-Bottom - Crimson Red)
+    final Paint book2Paint = Paint()..color = const Color(0xFFE11D48);
+    final RRect book2 = RRect.fromLTRBR(bx + 5, h * 0.72, bx + bw + 4, h * 0.81, const Radius.circular(5));
+    canvas.drawRRect(book2, book2Paint);
+    canvas.drawRRect(RRect.fromLTRBR(bx + 9, h * 0.74, bx + bw - 2, h * 0.79, const Radius.circular(3)), page1Paint);
+
+    // Book 3 (Middle-Top - Amber Coral)
+    final Paint book3Paint = Paint()..color = const Color(0xFFF97316);
+    final RRect book3 = RRect.fromLTRBR(bx + 12, h * 0.62, bx + bw + 8, h * 0.71, const Radius.circular(5));
+    canvas.drawRRect(book3, book3Paint);
+    canvas.drawRRect(RRect.fromLTRBR(bx + 16, h * 0.64, bx + bw + 2, h * 0.69, const Radius.circular(3)), page1Paint);
+
+    // Book 4 (Top - Salmon Pink)
+    final Paint book4Paint = Paint()..color = const Color(0xFFFDA4AF);
+    final RRect book4 = RRect.fromLTRBR(bx + 18, h * 0.52, bx + bw + 6, h * 0.61, const Radius.circular(5));
+    canvas.drawRRect(book4, book4Paint);
+    canvas.drawRRect(RRect.fromLTRBR(bx + 22, h * 0.54, bx + bw, h * 0.59, const Radius.circular(3)), page1Paint);
+
+    // 5. GIRL SITTING ON TOP BOOK WITH LAPTOP
+    // Girl Torso (Mustard Yellow)
+    final Paint girlBodyPaint = Paint()..color = const Color(0xFFEAB308);
+    canvas.drawRRect(RRect.fromLTRBR(bx + 28, h * 0.38, bx + 42, h * 0.52, const Radius.circular(6)), girlBodyPaint);
+
+    // Girl Legs (Navy Pants crossed sitting on book top)
+    final Paint girlLegsPaint = Paint()..color = const Color(0xFF1E293B);
+    final Path girlLegsPath = Path()
+      ..moveTo(bx + 28, h * 0.50)
+      ..lineTo(bx + 14, h * 0.62)
+      ..lineTo(bx + 24, h * 0.65)
+      ..lineTo(bx + 38, h * 0.52)
+      ..close();
+    canvas.drawPath(girlLegsPath, girlLegsPaint);
+
+    // Girl Open Laptop on Lap
+    final Paint laptopPaint = Paint()..color = const Color(0xFF0284C7);
+    canvas.drawRRect(RRect.fromLTRBR(bx + 20, h * 0.44, bx + 36, h * 0.46, const Radius.circular(2)), laptopPaint);
+    canvas.drawRRect(RRect.fromLTRBR(bx + 24, h * 0.38, bx + 34, h * 0.44, const Radius.circular(2)), Paint()..color = Colors.white.withOpacity(0.9));
+
+    // GIRL HEAD WITH NODDING ANIMATION
+    canvas.save();
+    canvas.translate(bx + 35, h * 0.34);
+    canvas.rotate(girlHeadAngle);
+
+    // Girl Hair (Navy Dark Bun)
+    canvas.drawCircle(const Offset(3, -4), 7, Paint()..color = const Color(0xFF0F172A));
+    // Girl Face Skin
+    canvas.drawCircle(Offset.zero, 6, Paint()..color = const Color(0xFFFDBA74));
+
+    canvas.restore();
+
+    // 6. BOY AT DESK WITH LAPTOP / COMPUTER (Left Side: x = w * 0.08 to w * 0.48)
+    final double dx = w * 0.08;
+
+    // Study Desk Table (Indigo Slate)
+    final Paint deskPaint = Paint()..color = const Color(0xFF1E293B);
+    canvas.drawRect(Rect.fromLTWH(dx, h * 0.60, w * 0.36, 5), deskPaint); // Table top
+    canvas.drawRect(Rect.fromLTWH(dx + 5, h * 0.60, 4, h * 0.32), deskPaint); // Left leg
+    canvas.drawRect(Rect.fromLTWH(dx + w * 0.34 - 5, h * 0.60, 4, h * 0.32), deskPaint); // Right leg
+
+    // Computer Monitor
+    final Paint monitorPaint = Paint()..color = const Color(0xFF0F172A);
+    canvas.drawRRect(RRect.fromLTRBR(dx + 28, h * 0.46, dx + 48, h * 0.60, const Radius.circular(3)), monitorPaint);
+    canvas.drawRRect(RRect.fromLTRBR(dx + 30, h * 0.48, dx + 46, h * 0.58, const Radius.circular(2)), Paint()..color = const Color(0xFF38BDF8).withOpacity(0.6));
+    canvas.drawRect(Rect.fromLTWH(dx + 36, h * 0.60, 4, 4), monitorPaint); // Stand
+
+    // Boy Torso (Purple Sweatshirt)
+    final Paint boyBodyPaint = Paint()..color = const Color(0xFF9333EA);
+    canvas.drawRRect(RRect.fromLTRBR(dx + 12, h * 0.48, dx + 26, h * 0.63, const Radius.circular(6)), boyBodyPaint);
+
+    // Boy Legs (Yellow Trousers)
+    final Paint boyLegsPaint = Paint()..color = const Color(0xFFFACC15);
+    canvas.drawRRect(RRect.fromLTRBR(dx + 15, h * 0.63, dx + 24, h * 0.88, const Radius.circular(4)), boyLegsPaint);
+
+    // BOY GESTURING ARM AND HAND (ANIMATED RAISED HAND)
+    canvas.save();
+    canvas.translate(dx + 25, h * 0.50); // Shoulder joint
+    canvas.rotate(boyArmAngle);
+
+    final Paint armPaint = Paint()
+      ..color = const Color(0xFF9333EA)
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(Offset.zero, const Offset(14, -12), armPaint); // Upper arm & gesturing hand
+
+    // Hand Skin
+    canvas.drawCircle(const Offset(16, -14), 4, Paint()..color = const Color(0xFFFDBA74));
+    canvas.restore();
+
+    // BOY HEAD WITH NODDING ANIMATION
+    canvas.save();
+    canvas.translate(dx + 19, h * 0.43); // Neck joint
+    canvas.rotate(boyHeadAngle);
+
+    // Hair
+    canvas.drawCircle(const Offset(0, -3), 7, Paint()..color = const Color(0xFF0F172A));
+    // Face Skin
+    canvas.drawCircle(Offset.zero, 6, Paint()..color = const Color(0xFFFDBA74));
+
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant EducationVectorScenePainter oldDelegate) {
+    return oldDelegate.spinAngle != spinAngle ||
+        oldDelegate.swayAngle != swayAngle ||
+        oldDelegate.boyArmAngle != boyArmAngle ||
+        oldDelegate.boyHeadAngle != boyHeadAngle ||
+        oldDelegate.girlHeadAngle != girlHeadAngle;
   }
 }
 
