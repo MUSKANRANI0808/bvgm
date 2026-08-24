@@ -3988,26 +3988,26 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                   ],
                 ),
               ] else ...[
-                // 🏆 4. SUCCESS: USER'S "Successful target.json" LOTTIE ANIMATION (HUGE & TRANSPARENT BACKDROP)
+                // 🏆 4. SUCCESS: USER'S "Successful target.json" LOTTIE ANIMATION (EXTRA HUGE SCALE & TRANSPARENT BACKDROP)
                 SizedBox(
-                  width: 250,
-                  height: 210,
+                  width: 270,
+                  height: 230,
                   child: Stack(
                     alignment: Alignment.center,
                     clipBehavior: Clip.none,
                     children: [
                       // Ambient Golden Glow Backdrop Orb
                       Transform.scale(
-                        scale: pulseVal * 1.35,
+                        scale: pulseVal * 1.45,
                         child: Container(
-                          width: 210,
-                          height: 185,
+                          width: 230,
+                          height: 200,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             gradient: RadialGradient(
                               colors: [
-                                const Color(0xFFFFD700).withOpacity(0.30),
-                                widget.accentColor.withOpacity(0.08),
+                                const Color(0xFFFFD700).withOpacity(0.35),
+                                widget.accentColor.withOpacity(0.10),
                                 Colors.transparent,
                               ],
                             ),
@@ -4015,19 +4015,19 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                         ),
                       ),
 
-                      // User's Successful Target Lottie Animation (Enlarged & Transparent Background)
+                      // User's Successful Target Lottie Animation (Extra Huge Scale)
                       Transform.scale(
-                        scale: 1.5,
+                        scale: 1.8,
                         child: Lottie.asset(
                           "assets/successful_target.json",
-                          width: 240,
-                          height: 200,
+                          width: 260,
+                          height: 220,
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) {
                             return Icon(
                               widget.mainIcon,
                               color: const Color(0xFFFFD700),
-                              size: 70,
+                              size: 75,
                             );
                           },
                         ),
