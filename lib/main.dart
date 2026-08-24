@@ -5367,6 +5367,7 @@ class CommonPage extends StatelessWidget {
   final IconData icon;
   final Widget child;
   final Widget? bottomNavigationBar;
+  final List<Color>? customGradient;
 
   const CommonPage({
     super.key,
@@ -5374,10 +5375,17 @@ class CommonPage extends StatelessWidget {
     required this.icon,
     required this.child,
     this.bottomNavigationBar,
+    this.customGradient,
   });
 
   @override
   Widget build(BuildContext context) {
+    final gradient = customGradient ?? const [
+      Color(0xFF0F172A),
+      Color(0xFF1E3A8A),
+      Color(0xFF2563EB),
+    ];
+
     return Scaffold(
       bottomNavigationBar: bottomNavigationBar,
       body: SafeArea(
@@ -5387,41 +5395,99 @@ class CommonPage extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 120),
               children: [
-                Row(
-                  children: [
-                    Container(
-                      height: 54,
-                      width: 54,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(18),
-                        color: Colors.black,
-                      ),
-                      child: Icon(icon, color: Colors.white),
+                // 🎨 COLORFUL HIGH-END HEADER BANNER
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: gradient,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.text,
+                    boxShadow: [
+                      BoxShadow(
+                        color: gradient.first.withOpacity(0.35),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.2),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // 🌟 GLOWING ICON BADGE
+                      Container(
+                        height: 46,
+                        width: 46,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          color: Colors.white.withOpacity(0.2),
+                          border: Border.all(color: Colors.white.withOpacity(0.3)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.15),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Icon(icon, color: Colors.white, size: 24),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // 🏷️ TITLE & MANAGEMENT TAG
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              title,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              "MANAGEMENT & RECORDS",
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFFBBF24).withOpacity(0.9),
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(14),
+
+                      // 🔍 BADGE ICON
+                      Container(
+                        height: 38,
+                        width: 38,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.18),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.white.withOpacity(0.25)),
+                        ),
+                        child: const Icon(
+                          Icons.account_balance_wallet_rounded,
+                          color: Colors.white,
+                          size: 19,
+                        ),
                       ),
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.search_rounded),
-                      ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 14),
                 child,
               ],
             ),
@@ -9982,16 +10048,17 @@ class _FeesPageState extends State<FeesPage> {
             ),
           ),
 
-          // 🔥 PILL BUTTONS (HORIZONTALLY SCROLLABLE TO PREVENT OVERFLOW)
+          // 🔥 COMPACT PILL BUTTONS (SLIMMER & SMALLER HEIGHT AS REQUESTED)
           Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.only(bottom: 10),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
               child: Row(
                 children: [
-                  // 1. DATE RANGE PILL BUTTON (Left - White background, grey border)
+                  // 1. DATE RANGE PILL BUTTON (Slim 30px Height)
                   InkWell(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(20),
                     onTap: () async {
                       final DateTimeRange? picked = await showDateRangePicker(
                         context: context,
@@ -10025,18 +10092,18 @@ class _FeesPageState extends State<FeesPage> {
                       }
                     },
                     child: Container(
-                      height: 38,
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      height: 30,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
                         color: (fromDate != null && toDate != null)
                             ? const Color(0xffeff6ff)
                             : Colors.white,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: (fromDate != null && toDate != null)
                               ? const Color(0xff0284c7)
-                              : const Color(0xff94a3b8),
-                          width: 1.2,
+                              : const Color(0xffcbd5e1),
+                          width: 1.1,
                         ),
                       ),
                       child: Row(
@@ -10044,32 +10111,32 @@ class _FeesPageState extends State<FeesPage> {
                         children: [
                           const Icon(
                             Icons.calendar_month_outlined,
-                            size: 18,
-                            color: Color(0xff334155),
+                            size: 14,
+                            color: Color(0xff0284c7),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 5),
                           Text(
                             (fromDate != null && toDate != null)
                                 ? "${fromDate!.day}/${fromDate!.month} - ${toDate!.day}/${toDate!.month}"
                                 : "Date Range",
                             style: const TextStyle(
-                              fontSize: 13,
+                              fontSize: 11.5,
                               fontWeight: FontWeight.w700,
                               color: Color(0xff1e293b),
                             ),
                           ),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: 3),
                           const Icon(
                             Icons.arrow_drop_down_rounded,
-                            size: 20,
-                            color: Color(0xff334155),
+                            size: 16,
+                            color: Color(0xff64748b),
                           ),
                         ],
                       ),
                     ),
                   ),
                   if (fromDate != null && toDate != null) ...[
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 5),
                     InkWell(
                       onTap: () {
                         setState(() {
@@ -10078,21 +10145,21 @@ class _FeesPageState extends State<FeesPage> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           color: Colors.grey.shade200,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.close, size: 14, color: Colors.grey),
+                        child: const Icon(Icons.close, size: 12, color: Colors.grey),
                       ),
                     ),
                   ],
 
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
 
-                  // 2. EXPORT EXCEL PILL BUTTON (Right - Blue badge style matching reference image)
+                  // 2. EXPORT EXCEL PILL BUTTON (Slim 30px Height)
                   InkWell(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(20),
                     onTap: () {
                       if (currentFilteredDocs.isNotEmpty) {
                         exportFeesExcel(currentFilteredDocs);
@@ -10103,13 +10170,13 @@ class _FeesPageState extends State<FeesPage> {
                       }
                     },
                     child: Container(
-                      height: 38,
+                      height: 30,
                       decoration: BoxDecoration(
                         color: const Color(0xffe0f2fe),
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: const Color(0xff0284c7),
-                          width: 1.2,
+                          width: 1.1,
                         ),
                       ),
                       child: Row(
@@ -10117,41 +10184,41 @@ class _FeesPageState extends State<FeesPage> {
                         children: [
                           // Left Solid Blue Badge
                           Container(
-                            height: 38,
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            height: 30,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
                             decoration: const BoxDecoration(
                               color: Color(0xff0284c7),
                               borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(22),
-                                bottomLeft: Radius.circular(22),
-                                topRight: Radius.circular(12),
-                                bottomRight: Radius.circular(12),
+                                topLeft: Radius.circular(18),
+                                bottomLeft: Radius.circular(18),
+                                topRight: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
                               ),
                             ),
                             child: const Center(
                               child: Icon(
                                 Icons.file_download_rounded,
                                 color: Colors.white,
-                                size: 16,
+                                size: 14,
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           const Text(
                             "Export Excel",
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 11.5,
                               fontWeight: FontWeight.w700,
                               color: Color(0xff0369a1),
                             ),
                           ),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: 2),
                           const Icon(
                             Icons.arrow_drop_down_rounded,
-                            size: 20,
+                            size: 16,
                             color: Color(0xff0369a1),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                         ],
                       ),
                     ),
@@ -15090,99 +15157,167 @@ class _StudentReportPageState extends State<StudentReportPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Student Report")),
+      appBar: AppBar(
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF0F172A),
+                Color(0xFF1E3A8A),
+                Color(0xFF2563EB),
+              ],
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Student Report",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: 0.2,
+              ),
+            ),
+            Text(
+              "ACADEMIC & FINANCIAL ANALYTICS",
+              style: TextStyle(
+                fontSize: 8.5,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFFFBBF24),
+                letterSpacing: 0.8,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.all(7),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white.withOpacity(0.25)),
+            ),
+            child: const Icon(
+              Icons.assessment_rounded,
+              color: Colors.white,
+              size: 18,
+            ),
+          ),
+        ],
+      ),
       backgroundColor: const Color(0xFFF5F7FB),
       body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 1100),
           child: Column(
             children: [
+              // 🎨 TOP CONTROL CARD (SEARCH + ACTION BUTTONS + STATUS FILTERS)
               Container(
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1.1),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 14,
+                      offset: const Offset(0, 4),
                     )
                   ],
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextField(
-                      onChanged: (val) {
-                        setState(() {
-                          searchText = val.toLowerCase();
-                        });
-                      },
-                      decoration: InputDecoration(
-                        hintText: "Search student...",
-                        prefixIcon: const Icon(Icons.search),
-                        filled: true,
-                        fillColor: Colors.grey.shade100,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
+                    // 1. SEARCH STUDENT BAR
+                    Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                      ),
+                      child: TextField(
+                        onChanged: (val) {
+                          setState(() {
+                            searchText = val.toLowerCase();
+                          });
+                        },
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                        decoration: const InputDecoration(
+                          hintText: "Search student by name or roll...",
+                          hintStyle: TextStyle(fontSize: 12.5, color: Color(0xFF94A3B8)),
+                          prefixIcon: Icon(Icons.search_rounded, size: 18, color: Color(0xFF0284C7)),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 10),
                         ),
                       ),
                     ),
                     const SizedBox(height: 10),
+
+                    // 2. ACTION CONTROLS ROW (SELECT CLASS PILL + EXPORT PDF PILL)
                     Row(
                       children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: () async {
-                            final usersSnap = await UserSession.yearColl('students')
-                                .get();
+                        // SELECT CLASS BUTTON PILL
+                        InkWell(
+                          borderRadius: BorderRadius.circular(18),
+                          onTap: () async {
+                            final usersSnap = await UserSession.yearColl('students').get();
 
                             List<String> allClasses = usersSnap.docs
-                                .map((e) =>
-                                (e.data()['classSection'] ?? "").toString())
+                                .map((e) => (e.data()['classSection'] ?? "").toString())
                                 .where((e) => e.isNotEmpty)
                                 .toSet()
                                 .toList();
 
-                            List<String> tempSelected =
-                            List.from(selectedClasses);
+                            List<String> tempSelected = List.from(selectedClasses);
 
                             showModalBottomSheet(
                               context: context,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                              ),
                               builder: (_) {
                                 return StatefulBuilder(
                                   builder: (context, setModalState) {
                                     return Padding(
-                                      padding: const EdgeInsets.all(16),
+                                      padding: const EdgeInsets.all(18),
                                       child: Column(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           const Text(
                                             "Select Classes",
                                             style: TextStyle(
+                                              fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          const SizedBox(height: 10),
-                                          Expanded(
+                                          const SizedBox(height: 12),
+                                          Flexible(
                                             child: ListView(
+                                              shrinkWrap: true,
                                               children: allClasses.map((c) {
                                                 return CheckboxListTile(
-                                                  value:
-                                                  tempSelected.contains(c),
-                                                  title: Text(c),
+                                                  activeColor: const Color(0xFF0284C7),
+                                                  value: tempSelected.contains(c),
+                                                  title: Text(c, style: const TextStyle(fontWeight: FontWeight.w600)),
                                                   onChanged: (val) {
                                                     setModalState(() {
                                                       if (val == true) {
-                                                        if (!tempSelected
-                                                            .contains(c)) {
+                                                        if (!tempSelected.contains(c)) {
                                                           tempSelected.add(c);
                                                         }
                                                       } else {
@@ -15194,18 +15329,25 @@ class _StudentReportPageState extends State<StudentReportPage> {
                                               }).toList(),
                                             ),
                                           ),
+                                          const SizedBox(height: 12),
                                           SafeArea(
                                             child: SizedBox(
                                               width: double.infinity,
+                                              height: 44,
                                               child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color(0xFF0284C7),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(14),
+                                                  ),
+                                                ),
                                                 onPressed: () {
                                                   setState(() {
-                                                    selectedClasses =
-                                                        tempSelected;
+                                                    selectedClasses = tempSelected;
                                                   });
                                                   Navigator.pop(context);
                                                 },
-                                                child: const Text("Apply"),
+                                                child: const Text("Apply Filter", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                               ),
                                             ),
                                           )
@@ -15217,93 +15359,137 @@ class _StudentReportPageState extends State<StudentReportPage> {
                               },
                             );
                           },
-                          child: const Text("Select Class"),
-                        ),
-                        const SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: exportReportPdf,
                           child: Container(
-                            height: 42,
-                            width: 42,
+                            height: 32,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xff0B3C91),
-                                  Color(0xff6c8cff),
-                                ],
+                              color: selectedClasses.isNotEmpty ? const Color(0xFFEFF6FF) : Colors.white,
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(
+                                color: selectedClasses.isNotEmpty ? const Color(0xFF0284C7) : const Color(0xFFCBD5E1),
+                                width: 1.1,
                               ),
-                              borderRadius: BorderRadius.circular(14),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.blue.withOpacity(0.35),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
                             ),
-                            child: const Icon(
-                              Icons.picture_as_pdf_rounded,
-                              color: Colors.white,
-                              size: 22,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.filter_alt_outlined, size: 14, color: Color(0xFF0284C7)),
+                                const SizedBox(width: 5),
+                                Text(
+                                  selectedClasses.isEmpty ? "Select Class" : "Classes (${selectedClasses.length})",
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: selectedClasses.isNotEmpty ? const Color(0xFF0284C7) : const Color(0xFF334155),
+                                  ),
+                                ),
+                                const SizedBox(width: 3),
+                                const Icon(Icons.arrow_drop_down_rounded, size: 16, color: Color(0xFF64748B)),
+                              ],
                             ),
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
+
+                        // EXPORT PDF BUTTON PILL
+                        InkWell(
+                          borderRadius: BorderRadius.circular(18),
+                          onTap: exportReportPdf,
+                          child: Container(
+                            height: 32,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF0284C7), Color(0xFF0369A1)],
+                              ),
+                              borderRadius: BorderRadius.circular(18),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF0284C7).withOpacity(0.3),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                buildFilter("All", "all"),
-                                buildFilter("Due", "due"),
-                                buildFilter("Zero", "zero"),
-                                buildFilter("Advance", "advance"),
+                                Icon(Icons.picture_as_pdf_rounded, color: Colors.white, size: 14),
+                                SizedBox(width: 5),
+                                Text(
+                                  "PDF Export",
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 6,
-                      children: selectedClasses.map((e) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.blue.shade200),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                e,
-                                style: TextStyle(
-                                  color: Colors.blue.shade800,
-                                  fontSize: 13,
+                    const SizedBox(height: 10),
+
+                    // 3. STATUS FILTER CHIPS (ALL, DUE, ZERO, ADVANCE)
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      child: Row(
+                        children: [
+                          buildFilter("All", "all"),
+                          buildFilter("Due", "due"),
+                          buildFilter("Zero", "zero"),
+                          buildFilter("Advance", "advance"),
+                        ],
+                      ),
+                    ),
+
+                    // 4. SELECTED CLASS PILLS (IF ANY)
+                    if (selectedClasses.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: selectedClasses.map((e) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEFF6FF),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: const Color(0xFF93C5FD)),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  e,
+                                  style: const TextStyle(
+                                    color: Color(0xFF1E40AF),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 6),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedClasses.remove(e);
-                                  });
-                                },
-                                child: const Icon(
-                                  Icons.close,
-                                  size: 16,
-                                  color: Colors.blue,
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    )
+                                const SizedBox(width: 4),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedClasses.remove(e);
+                                    });
+                                  },
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 13,
+                                    color: Color(0xFF1E40AF),
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -15517,19 +15703,33 @@ class _StudentReportPageState extends State<StudentReportPage> {
           selectedFilter = value;
         });
       },
-      child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.only(right: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
         decoration: BoxDecoration(
-          color: active ? Colors.blue : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.blue),
+          color: active ? const Color(0xFF0284C7) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: active ? const Color(0xFF0284C7) : const Color(0xFFCBD5E1),
+            width: 1.1,
+          ),
+          boxShadow: active
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFF0284C7).withOpacity(0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  )
+                ]
+              : null,
         ),
         child: Text(
           title,
           style: TextStyle(
-            color: active ? Colors.white : Colors.blue,
-            fontWeight: FontWeight.bold,
+            color: active ? Colors.white : const Color(0xFF334155),
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
