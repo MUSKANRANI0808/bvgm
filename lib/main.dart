@@ -3202,7 +3202,7 @@ class _MasterpieceBannerHeaderDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => topInset + 54.0;
 
   @override
-  double get maxExtent => topInset + 245.0;
+  double get maxExtent => topInset + 265.0;
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
@@ -3397,7 +3397,7 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
   Widget build(BuildContext context) {
     final double topInset = MediaQuery.of(context).padding.top;
     return SizedBox(
-      height: topInset + 245.0,
+      height: topInset + 265.0,
       child: PageView.builder(
         controller: _pageController,
         onPageChanged: (index) {
@@ -3855,18 +3855,171 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
 
               // 3. CONCEPT-SPECIFIC HIGH-END 3D EMBLEM & DYNAMIC PARTICLES
               if (widget.storyIndex == 0) ...[
-                // 📚 1. EDUCATION: ANIMATED VECTOR STUDY SCENE (ROTATING GEAR, SWAYING LEAVES, BOY HEAD/HAND MOVING, GIRL HEAD MOVING)
+                // 📚 1. EDUCATION: REALISTIC HD VECTOR STUDY SCENE WITH LIVE ANIMATED OVERLAYS
                 SizedBox(
-                  width: 155,
-                  height: 135,
-                  child: CustomPaint(
-                    painter: EducationVectorScenePainter(
-                      spinAngle: spinVal,
-                      swayAngle: sin(driveVal * 2 * pi) * 0.12,
-                      boyArmAngle: -0.2 + sin(driveVal * 2 * pi) * 0.22,
-                      boyHeadAngle: sin(driveVal * 2 * pi) * 0.08,
-                      girlHeadAngle: sin((driveVal * 2 * pi) + 1.2) * 0.09,
-                    ),
+                  width: 175,
+                  height: 155,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Background Ambient Glow Orb
+                      Transform.scale(
+                        scale: pulseVal,
+                        child: Container(
+                          width: 150,
+                          height: 130,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24),
+                            gradient: RadialGradient(
+                              colors: [
+                                widget.accentColor.withOpacity(0.4),
+                                widget.accentColor.withOpacity(0.1),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // REALISTIC HIGH-DEFINITION VECTOR ILLUSTRATION ARTWORK
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          width: 165,
+                          height: 138,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.25),
+                                blurRadius: 18,
+                                spreadRadius: 2,
+                                offset: const Offset(0, 6),
+                              ),
+                              BoxShadow(
+                                color: widget.accentColor.withOpacity(0.4),
+                                blurRadius: 12,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                            border: Border.all(color: Colors.white.withOpacity(0.9), width: 2),
+                          ),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Image.asset(
+                                "assets/education_study_scene.jpg",
+                                fit: BoxFit.cover,
+                              ),
+                              // Soft Glassmorphic Gradient Overlay on edges
+                              Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withOpacity(0.05),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      // ROTATING SCI-FI BLUE GEAR OVERLAY (Top Center)
+                      Positioned(
+                        top: -6,
+                        left: 55,
+                        child: Transform.rotate(
+                          angle: spinVal,
+                          child: Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: const Color(0xFF1D4ED8),
+                              border: Border.all(color: Colors.white, width: 2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF38BDF8).withOpacity(0.6),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.settings_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // SWAYING ANIMATED LEAVES OVERLAY (Top Right)
+                      Positioned(
+                        top: -4,
+                        right: 8,
+                        child: Transform.rotate(
+                          angle: sin(driveVal * 2 * pi) * 0.18,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF97316),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.orange.withOpacity(0.5),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.eco_rounded,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // UPWARD FLOATING KNOWLEDGE PARTICLES
+                      ...List.generate(4, (i) {
+                        final dy = -((driveVal + (i * 0.25)) % 1.0) * 48;
+                        final dx = sin((driveVal * 2 * pi) + i) * 14;
+                        final op = (1.0 - ((driveVal + (i * 0.25)) % 1.0)).clamp(0.0, 1.0);
+                        final List<String> symbols = ["✨", "💡", "📚", "⭐"];
+                        return Positioned(
+                          top: 20 + dy,
+                          left: 14.0 + dx + (i * 38),
+                          child: Opacity(
+                            opacity: op,
+                            child: Container(
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.15),
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                              child: Text(
+                                symbols[i % symbols.length],
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
                   ),
                 ),
               ] else if (widget.storyIndex == 1) ...[
