@@ -3699,94 +3699,17 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
 
                                   const SizedBox(width: 8),
 
-                                  // RIGHT COLUMN: MULTI-ITEM ANIMATED GRAPHIC CANVAS
+                                  // RIGHT COLUMN: 3D HOLOGRAPHIC ANIMATED STAGE
                                   Expanded(
                                     flex: 4,
                                     child: Transform.translate(
                                       offset: Offset(0, _floatAnimation.value),
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          // Main Companion Graphic Card (Live Video Animation Effect)
-                                          AnimatedStoryVideoGraphic(
-                                            storyIndex: index,
-                                            mainIcon: story["mainIcon"] as IconData,
-                                            accentColor: accentColor,
-                                          ),
-
-                                          // Floating Item Badge 1 (Top Right Avatar)
-                                          Positioned(
-                                            right: 0,
-                                            top: 0,
-                                            child: Container(
-                                              padding: const EdgeInsets.all(4),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                shape: BoxShape.circle,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black.withOpacity(0.2),
-                                                    blurRadius: 8,
-                                                    offset: const Offset(0, 3),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Text(
-                                                story["avatar"],
-                                                style: const TextStyle(fontSize: 18),
-                                              ),
-                                            ),
-                                          ),
-
-                                          // Floating Item Badge 2 (Bottom Left Pill)
-                                          Positioned(
-                                            left: 0,
-                                            bottom: 2,
-                                            child: Transform.translate(
-                                              offset: Offset(0, -_floatAnimation.value * 0.8),
-                                              child: Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2.5),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.black.withOpacity(0.4),
-                                                  borderRadius: BorderRadius.circular(9),
-                                                  border: Border.all(color: Colors.white.withOpacity(0.3)),
-                                                ),
-                                                child: Text(
-                                                  story["badge1"],
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-
-                                          // Floating Item Badge 3 (Top Left Pill)
-                                          Positioned(
-                                            left: 0,
-                                            top: 2,
-                                            child: Transform.translate(
-                                              offset: Offset(0, _floatAnimation.value * 0.8),
-                                              child: Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2.5),
-                                                decoration: BoxDecoration(
-                                                  color: accentColor.withOpacity(0.85),
-                                                  borderRadius: BorderRadius.circular(9),
-                                                ),
-                                                child: Text(
-                                                  story["badge2"],
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 8.5,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                      child: Center(
+                                        child: AnimatedStoryVideoGraphic(
+                                          storyIndex: index,
+                                          mainIcon: story["mainIcon"] as IconData,
+                                          accentColor: accentColor,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -3865,55 +3788,61 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
         final pulseVal = 0.95 + (_pulseController.value * 0.12);
         final driveVal = _driveController.value;
 
-        return Container(
-          width: 90,
-          height: 108,
-          decoration: BoxDecoration(
-            color: const Color(0xFF0F172A).withOpacity(0.4),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: widget.accentColor.withOpacity(0.5), width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: widget.accentColor.withOpacity(0.25),
-                blurRadius: 14,
-                spreadRadius: 1,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
+        return SizedBox(
+          width: 125,
+          height: 135,
           child: Stack(
             alignment: Alignment.center,
             clipBehavior: Clip.none,
             children: [
-              // 1. ROTATING SCI-FI RADAR / VIDEO GLOW RING IN BACKGROUND
+              // 1. AMBIENT GLOWING GLASS ORB BACKDROP
+              Transform.scale(
+                scale: pulseVal,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        widget.accentColor.withOpacity(0.35),
+                        widget.accentColor.withOpacity(0.08),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // 2. 360-DEGREE ROTATING NEON RING
               Transform.rotate(
                 angle: spinVal,
                 child: Container(
-                  width: 68,
-                  height: 68,
+                  width: 88,
+                  height: 88,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: widget.accentColor.withOpacity(0.4),
-                      width: 1.8,
+                      color: widget.accentColor.withOpacity(0.45),
+                      width: 1.5,
                     ),
                   ),
                   child: Stack(
                     children: [
                       Positioned(
-                        top: 2,
-                        left: 28,
+                        top: 4,
+                        left: 40,
                         child: Container(
-                          width: 7,
-                          height: 7,
+                          width: 8,
+                          height: 8,
                           decoration: BoxDecoration(
                             color: widget.accentColor,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
                                 color: widget.accentColor,
-                                blurRadius: 6,
-                                spreadRadius: 2,
+                                blurRadius: 8,
+                                spreadRadius: 3,
                               ),
                             ],
                           ),
@@ -3924,55 +3853,72 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                 ),
               ),
 
-              // 2. STORY SPECIFIC VIDEO ANIMATION CONTENT
+              // 3. CONCEPT-SPECIFIC HIGH-END 3D EMBLEM & DYNAMIC PARTICLES
               if (widget.storyIndex == 0) ...[
-                // 📚 1. EDUCATION: ANIMATED OPEN BOOK & FLOATING KNOWLEDGE PARTICLES
+                // 📚 1. EDUCATION: 3D OPEN BOOK & UPWARD KNOWLEDGE PARTICLES
                 Stack(
                   alignment: Alignment.center,
                   clipBehavior: Clip.none,
                   children: [
-                    // Upward floating spark particles
-                    ...List.generate(3, (i) {
-                      final dy = -((driveVal + (i * 0.33)) % 1.0) * 35;
-                      final op = (1.0 - ((driveVal + (i * 0.33)) % 1.0)).clamp(0.0, 1.0);
+                    // Upward floating luminous particles
+                    ...List.generate(4, (i) {
+                      final dy = -((driveVal + (i * 0.25)) % 1.0) * 42;
+                      final dx = sin((driveVal * 2 * pi) + i) * 12;
+                      final op = (1.0 - ((driveVal + (i * 0.25)) % 1.0)).clamp(0.0, 1.0);
+                      final List<String> symbols = ["✨", "💡", "📚", "⭐"];
                       return Positioned(
-                        top: 25 + dy,
-                        left: 18.0 + (i * 22),
+                        top: 30 + dy,
+                        left: 20.0 + dx + (i * 18),
                         child: Opacity(
                           opacity: op,
-                          child: Icon(
-                            i == 1 ? Icons.lightbulb_rounded : Icons.auto_awesome,
-                            color: widget.accentColor,
-                            size: 13,
+                          child: Text(
+                            symbols[i % symbols.length],
+                            style: const TextStyle(fontSize: 13),
                           ),
                         ),
                       );
                     }),
-                    // Main Book Icon
+                    // Center Glowing Book Emblem
                     Transform.scale(
                       scale: pulseVal,
-                      child: Icon(
-                        widget.mainIcon,
-                        color: Colors.white,
-                        size: 42,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF0F172A).withOpacity(0.6),
+                          border: Border.all(color: widget.accentColor.withOpacity(0.6), width: 1.8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.accentColor.withOpacity(0.3),
+                              blurRadius: 16,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          widget.mainIcon,
+                          color: Colors.white,
+                          size: 46,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ] else if (widget.storyIndex == 1) ...[
-                // 🛡️ 2. DISCIPLINE: ROTATING SHIELD & TICKING PRECISION RADAR
+                // 🛡️ 2. DISCIPLINE: 3D METALLIC SHIELD & TICKING PRECISION RADAR
                 Stack(
                   alignment: Alignment.center,
+                  clipBehavior: Clip.none,
                   children: [
-                    // Pulsing Radar Ring
+                    // Pulsing Radar Circle
                     Transform.scale(
-                      scale: pulseVal,
+                      scale: pulseVal * 1.1,
                       child: Container(
-                        width: 52,
-                        height: 52,
+                        width: 72,
+                        height: 72,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: widget.accentColor.withOpacity(0.5), width: 2),
+                          border: Border.all(color: widget.accentColor.withOpacity(0.4), width: 1.8),
                         ),
                       ),
                     ),
@@ -3980,55 +3926,103 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                     Transform.rotate(
                       angle: spinVal,
                       child: Container(
-                        width: 44,
+                        width: 60,
                         height: 2,
-                        color: widget.accentColor.withOpacity(0.85),
+                        color: widget.accentColor.withOpacity(0.9),
                       ),
                     ),
-                    // Center Shield Icon
+                    // Center Shield Emblem
                     Transform.scale(
-                      scale: pulseVal * 0.95,
-                      child: Icon(
-                        widget.mainIcon,
-                        color: Colors.white,
-                        size: 38,
+                      scale: pulseVal,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF0F172A).withOpacity(0.6),
+                          border: Border.all(color: widget.accentColor.withOpacity(0.6), width: 1.8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.accentColor.withOpacity(0.35),
+                              blurRadius: 16,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          widget.mainIcon,
+                          color: Colors.white,
+                          size: 44,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ] else if (widget.storyIndex == 2) ...[
-                // 🤝 3. RESPONSIBILITY: EXPANDING CONCENTRIC RIPPLES & GROWING SPROUT
+                // 🤝 3. RESPONSIBILITY: EXPANDING CONCENTRIC RIPPLES & GROWING SEEDLINGS
                 Stack(
                   alignment: Alignment.center,
+                  clipBehavior: Clip.none,
                   children: [
-                    // Concentric Expanding Ripple 1
+                    // Expanding Concentric Ripple 1
                     Transform.scale(
-                      scale: 0.8 + (driveVal * 0.5),
+                      scale: 0.7 + (driveVal * 0.6),
                       child: Opacity(
                         opacity: (1.0 - driveVal).clamp(0.0, 1.0),
                         child: Container(
-                          width: 55,
-                          height: 55,
+                          width: 80,
+                          height: 80,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: widget.accentColor, width: 1.8),
+                            border: Border.all(color: widget.accentColor, width: 2),
                           ),
                         ),
                       ),
                     ),
-                    // Main Helping Hands Icon
+                    // Upward floating leaf particles
+                    ...List.generate(3, (i) {
+                      final dy = -((driveVal + (i * 0.33)) % 1.0) * 40;
+                      final op = (1.0 - ((driveVal + (i * 0.33)) % 1.0)).clamp(0.0, 1.0);
+                      final List<String> leaves = ["🌱", "🍃", "💚"];
+                      return Positioned(
+                        top: 28 + dy,
+                        left: 15.0 + (i * 22),
+                        child: Opacity(
+                          opacity: op,
+                          child: Text(
+                            leaves[i % leaves.length],
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ),
+                      );
+                    }),
+                    // Center Helping Hands Emblem
                     Transform.scale(
                       scale: pulseVal,
-                      child: Icon(
-                        widget.mainIcon,
-                        color: Colors.white,
-                        size: 40,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF0F172A).withOpacity(0.6),
+                          border: Border.all(color: widget.accentColor.withOpacity(0.6), width: 1.8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.accentColor.withOpacity(0.35),
+                              blurRadius: 16,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          widget.mainIcon,
+                          color: Colors.white,
+                          size: 44,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ] else ...[
-                // 🏆 4. SUCCESS: ROTATING GOLDEN SUNBURST & FLOATING VICTORY STARS
+                // 🏆 4. SUCCESS: 360° GOLDEN SUNBURST, GOLDEN TROPHY & FLOATING CROWN
                 Stack(
                   alignment: Alignment.center,
                   clipBehavior: Clip.none,
@@ -4038,74 +4032,55 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                       angle: spinVal * 0.5,
                       child: Icon(
                         Icons.brightness_7_rounded,
-                        color: const Color(0xFFFFD700).withOpacity(0.4),
-                        size: 64,
+                        color: const Color(0xFFFFD700).withOpacity(0.35),
+                        size: 82,
                       ),
                     ),
-                    // Floating Victory Stars
-                    ...List.generate(3, (i) {
-                      final dy = -((driveVal + (i * 0.33)) % 1.0) * 38;
-                      final op = (1.0 - ((driveVal + (i * 0.33)) % 1.0)).clamp(0.0, 1.0);
+                    // Floating Golden Victory Stars & Confetti
+                    ...List.generate(4, (i) {
+                      final dy = -((driveVal + (i * 0.25)) % 1.0) * 44;
+                      final dx = sin((driveVal * 2 * pi) + i) * 10;
+                      final op = (1.0 - ((driveVal + (i * 0.25)) % 1.0)).clamp(0.0, 1.0);
+                      final List<String> victoryItems = ["⭐", "✨", "👑", "🎉"];
                       return Positioned(
-                        top: 28 + dy,
-                        left: 14.0 + (i * 24),
+                        top: 24 + dy,
+                        left: 10.0 + dx + (i * 20),
                         child: Opacity(
                           opacity: op,
-                          child: const Icon(
-                            Icons.star_rounded,
-                            color: Color(0xFFFFD700),
-                            size: 13,
+                          child: Text(
+                            victoryItems[i % victoryItems.length],
+                            style: const TextStyle(fontSize: 13),
                           ),
                         ),
                       );
                     }),
-                    // Main Golden Trophy Icon
+                    // Center Golden Trophy Emblem
                     Transform.scale(
                       scale: pulseVal,
-                      child: Icon(
-                        widget.mainIcon,
-                        color: const Color(0xFFFFD700),
-                        size: 44,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF0F172A).withOpacity(0.7),
+                          border: Border.all(color: const Color(0xFFFFD700), width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFFFD700).withOpacity(0.4),
+                              blurRadius: 20,
+                              spreadRadius: 3,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          widget.mainIcon,
+                          color: const Color(0xFFFFD700),
+                          size: 48,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ],
-
-              // 3. TOP-LEFT LIVE VIDEO BADGE OVERLAY ("▶ LIVE")
-              Positioned(
-                top: 4,
-                left: 5,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.5, vertical: 1.5),
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent,
-                    borderRadius: BorderRadius.circular(7),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.redAccent.withOpacity(0.4),
-                        blurRadius: 5,
-                      )
-                    ],
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.play_arrow_rounded, color: Colors.white, size: 9),
-                      SizedBox(width: 1),
-                      Text(
-                        "LIVE",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 7.5,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
           ),
         );
