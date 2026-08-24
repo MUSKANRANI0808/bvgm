@@ -3616,38 +3616,6 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        // Top Tag Pill
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(0.15),
-                                            borderRadius: BorderRadius.circular(20),
-                                            border: Border.all(color: Colors.white.withOpacity(0.25)),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Container(
-                                                width: 5,
-                                                height: 5,
-                                                decoration: BoxDecoration(
-                                                  color: accentColor,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 5),
-                                              Text(
-                                                story["tag"],
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
                                         // Main Title & Description
                                         Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -3701,7 +3669,7 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
 
                                   // RIGHT COLUMN: 3D HOLOGRAPHIC ANIMATED STAGE
                                   Expanded(
-                                    flex: 6,
+                                    flex: 5,
                                     child: Transform.translate(
                                       offset: Offset(0, _floatAnimation.value),
                                       child: Center(
