@@ -3611,7 +3611,7 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
                                 children: [
                                   // LEFT COLUMN: TEXT & PROGRESS INDICATORS
                                   Expanded(
-                                    flex: 6,
+                                    flex: 5,
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -3701,7 +3701,7 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
 
                                   // RIGHT COLUMN: 3D HOLOGRAPHIC ANIMATED STAGE
                                   Expanded(
-                                    flex: 5,
+                                    flex: 6,
                                     child: Transform.translate(
                                       offset: Offset(0, _floatAnimation.value),
                                       child: Center(
@@ -3855,26 +3855,26 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
 
               // 3. CONCEPT-SPECIFIC HIGH-END 3D EMBLEM & DYNAMIC PARTICLES
               if (widget.storyIndex == 0) ...[
-                // 📚 1. EDUCATION: USER'S "Exams Preparation" LOTTIE ANIMATION (ENLARGED & TRANSPARENT BACKDROP)
+                // 📚 1. EDUCATION: USER'S "Exams Preparation" LOTTIE ANIMATION (HUGE SIZE & CLEAN TRANSPARENT)
                 SizedBox(
-                  width: 220,
-                  height: 190,
+                  width: 250,
+                  height: 210,
                   child: Stack(
                     alignment: Alignment.center,
                     clipBehavior: Clip.none,
                     children: [
                       // Ambient Glow Backdrop Orb
                       Transform.scale(
-                        scale: pulseVal * 1.25,
+                        scale: pulseVal * 1.35,
                         child: Container(
-                          width: 190,
-                          height: 170,
+                          width: 210,
+                          height: 185,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             gradient: RadialGradient(
                               colors: [
-                                widget.accentColor.withOpacity(0.35),
-                                widget.accentColor.withOpacity(0.1),
+                                widget.accentColor.withOpacity(0.30),
+                                widget.accentColor.withOpacity(0.08),
                                 Colors.transparent,
                               ],
                             ),
@@ -3882,13 +3882,13 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                         ),
                       ),
 
-                      // User's Exams Preparation Lottie Animation (Enlarged & Green Blob Removed)
+                      // User's Exams Preparation Lottie Animation (Huge Scale & Clean Background)
                       Transform.scale(
-                        scale: 1.25,
+                        scale: 1.6,
                         child: Lottie.asset(
                           "assets/exams_preparation.json",
-                          width: 210,
-                          height: 180,
+                          width: 240,
+                          height: 200,
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) {
                             return Icon(
@@ -3899,25 +3899,6 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                           },
                         ),
                       ),
-
-                      // Upward Floating Knowledge Sparkles Particles
-                      ...List.generate(4, (i) {
-                        final dy = -((driveVal + (i * 0.25)) % 1.0) * 56;
-                        final dx = sin((driveVal * 2 * pi) + i) * 16;
-                        final op = (1.0 - ((driveVal + (i * 0.25)) % 1.0)).clamp(0.0, 1.0);
-                        final List<String> symbols = ["✨", "💡", "📚", "⭐"];
-                        return Positioned(
-                          top: 20 + dy,
-                          left: 10.0 + dx + (i * 46),
-                          child: Opacity(
-                            opacity: op,
-                            child: Text(
-                              symbols[i % symbols.length],
-                              style: const TextStyle(fontSize: 15),
-                            ),
-                          ),
-                        );
-                      }),
                     ],
                   ),
                 ),
