@@ -3288,39 +3288,51 @@ class _MasterpieceStudentBannerState extends State<MasterpieceStudentBanner> wit
 
   final List<Map<String, dynamic>> _bannerStories = [
     {
-      "step": "STEP 1 OF 3",
-      "tag": "🚌 School Bus Journey",
-      "title": "Subah Ki Nayi Shuruat",
-      "desc": "Ghar se nikal kar surakshit school bus me dosto ke sath gyaan paane ka safar!",
-      "gradient": [const Color(0xFF0F172A), const Color(0xFF0369A1), const Color(0xFF0284C7)],
-      "accent": const Color(0xFF38BDF8),
-      "avatar": "👦🏻🎒",
-      "badge1": "🎒 Bus",
-      "badge2": "✏️ Learn",
-      "mainIcon": Icons.directions_bus_filled_rounded,
+      "step": "CONCEPT 01 / 04",
+      "tag": "📚 Knowledge & Learning",
+      "title": "EDUCATION",
+      "desc": "Gyaan se hi har sapna sach hota hai, padhai se bright future banayein!",
+      "gradient": [const Color(0xFF0F172A), const Color(0xFF1E3A8A), const Color(0xFF2563EB)],
+      "accent": const Color(0xFF60A5FA),
+      "avatar": "📖💡",
+      "badge1": "📚 Learn",
+      "badge2": "💡 Knowledge",
+      "mainIcon": Icons.auto_stories_rounded,
     },
     {
-      "step": "STEP 2 OF 3",
-      "tag": "📚 Study & Digital Tech",
-      "title": "Books & Laptop Education",
-      "desc": "Kitabo ke gyaan aur laptop se smart digital study karke Naye India me aage badhna!",
-      "gradient": [const Color(0xFF0F172A), const Color(0xFF4338CA), const Color(0xFF6366F1)],
-      "accent": const Color(0xFF818CF8),
-      "avatar": "👦🏻💻",
-      "badge1": "📚 Books",
-      "badge2": "💻 Laptop",
-      "mainIcon": Icons.laptop_chromebook_rounded,
+      "step": "CONCEPT 02 / 04",
+      "tag": "🛡️ Conduct & Character",
+      "title": "DISCIPLINE",
+      "desc": "Anushasan hi jeevan me aage badhne ki sacchi chabi aur pehchan hai!",
+      "gradient": [const Color(0xFF0F172A), const Color(0xFF581C87), const Color(0xFF7C3AED)],
+      "accent": const Color(0xFFA78BFA),
+      "avatar": "🛡️⏰",
+      "badge1": "⏰ Punctual",
+      "badge2": "🛡️ Shield",
+      "mainIcon": Icons.verified_user_rounded,
     },
     {
-      "step": "STEP 3 OF 3",
-      "tag": "🎓 Graduation & Success",
-      "title": "Kamyabi Aur Safalta",
-      "desc": "Kada prayaas aur gyaan se jeevan me TOP karke parivar ka naam roshan!",
-      "gradient": [const Color(0xFF0F172A), const Color(0xFFB45309), const Color(0xFFD97706)],
+      "step": "CONCEPT 03 / 04",
+      "tag": "🤝 Duty & Leadership",
+      "title": "RESPONSIBILITY",
+      "desc": "Apne kartavya aur samajik jimmedariyo ko imaandari se nibhane ka sankalp!",
+      "gradient": [const Color(0xFF0F172A), const Color(0xFF064E3B), const Color(0xFF059669)],
+      "accent": const Color(0xFF34D399),
+      "avatar": "🌱🤝",
+      "badge1": "🤝 Duty",
+      "badge2": "🌱 Growth",
+      "mainIcon": Icons.volunteer_activism_rounded,
+    },
+    {
+      "step": "CONCEPT 04 / 04",
+      "tag": "🏆 Achievement & Glory",
+      "title": "SUCCESS",
+      "desc": "Mehanat aur lagan se apne sabhi lakshya aur unchaniyo ko hasil karein!",
+      "gradient": [const Color(0xFF0F172A), const Color(0xFF78350F), const Color(0xFFD97706)],
       "accent": const Color(0xFFFBBF24),
-      "avatar": "👨🏼🎓🏆",
-      "badge1": "🏅 Winner",
-      "badge2": "🌟 Top",
+      "avatar": "👑🏆",
+      "badge1": "🏆 Winner",
+      "badge2": "⭐ Victory",
       "mainIcon": Icons.emoji_events_rounded,
     },
   ];
@@ -3914,118 +3926,146 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
 
               // 2. STORY SPECIFIC VIDEO ANIMATION CONTENT
               if (widget.storyIndex == 0) ...[
-                // 🚌 BUS JOURNEY ANIMATION VIDEO EFFECT
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                // 📚 1. EDUCATION: ANIMATED OPEN BOOK & FLOATING KNOWLEDGE PARTICLES
+                Stack(
+                  alignment: Alignment.center,
+                  clipBehavior: Clip.none,
                   children: [
-                    Transform.translate(
-                      offset: Offset(0, sin(driveVal * 2 * pi) * 2.5),
-                      child: Transform.scale(
-                        scale: pulseVal,
-                        child: Icon(
-                          widget.mainIcon,
-                          color: Colors.white,
-                          size: 40,
+                    // Upward floating spark particles
+                    ...List.generate(3, (i) {
+                      final dy = -((driveVal + (i * 0.33)) % 1.0) * 35;
+                      final op = (1.0 - ((driveVal + (i * 0.33)) % 1.0)).clamp(0.0, 1.0);
+                      return Positioned(
+                        top: 25 + dy,
+                        left: 18.0 + (i * 22),
+                        child: Opacity(
+                          opacity: op,
+                          child: Icon(
+                            i == 1 ? Icons.lightbulb_rounded : Icons.auto_awesome,
+                            color: widget.accentColor,
+                            size: 13,
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    // Moving Road Lines Effect
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Container(
-                        width: 50,
-                        height: 3,
-                        color: Colors.white24,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              left: (driveVal * 50) - 16,
-                              child: Container(
-                                width: 16,
-                                height: 3,
-                                color: widget.accentColor,
-                              ),
-                            ),
-                          ],
-                        ),
+                      );
+                    }),
+                    // Main Book Icon
+                    Transform.scale(
+                      scale: pulseVal,
+                      child: Icon(
+                        widget.mainIcon,
+                        color: Colors.white,
+                        size: 42,
                       ),
                     ),
                   ],
                 ),
               ] else if (widget.storyIndex == 1) ...[
-                // 💻 BOOKS & LAPTOP ANIMATION VIDEO EFFECT
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                // 🛡️ 2. DISCIPLINE: ROTATING SHIELD & TICKING PRECISION RADAR
+                Stack(
+                  alignment: Alignment.center,
                   children: [
+                    // Pulsing Radar Ring
                     Transform.scale(
                       scale: pulseVal,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Icon(
-                            widget.mainIcon,
-                            color: Colors.white,
-                            size: 42,
-                          ),
-                          Positioned(
-                            top: 13,
-                            child: Container(
-                              width: 18,
-                              height: 9,
-                              decoration: BoxDecoration(
-                                color: widget.accentColor.withOpacity(0.35),
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                              child: Center(
-                                child: Container(
-                                  width: 12,
-                                  height: 2,
-                                  color: Colors.white.withOpacity(0.85),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: widget.accentColor.withOpacity(0.5), width: 2),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(4, (i) {
-                        final h = 3.0 + sin((driveVal * 2 * pi) + i) * 3;
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 1.5),
-                          width: 3,
-                          height: h.clamp(2.0, 8.0),
+                    // Ticking Radar Line
+                    Transform.rotate(
+                      angle: spinVal,
+                      child: Container(
+                        width: 44,
+                        height: 2,
+                        color: widget.accentColor.withOpacity(0.85),
+                      ),
+                    ),
+                    // Center Shield Icon
+                    Transform.scale(
+                      scale: pulseVal * 0.95,
+                      child: Icon(
+                        widget.mainIcon,
+                        color: Colors.white,
+                        size: 38,
+                      ),
+                    ),
+                  ],
+                ),
+              ] else if (widget.storyIndex == 2) ...[
+                // 🤝 3. RESPONSIBILITY: EXPANDING CONCENTRIC RIPPLES & GROWING SPROUT
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Concentric Expanding Ripple 1
+                    Transform.scale(
+                      scale: 0.8 + (driveVal * 0.5),
+                      child: Opacity(
+                        opacity: (1.0 - driveVal).clamp(0.0, 1.0),
+                        child: Container(
+                          width: 55,
+                          height: 55,
                           decoration: BoxDecoration(
-                            color: widget.accentColor,
-                            borderRadius: BorderRadius.circular(2),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: widget.accentColor, width: 1.8),
                           ),
-                        );
-                      }),
+                        ),
+                      ),
+                    ),
+                    // Main Helping Hands Icon
+                    Transform.scale(
+                      scale: pulseVal,
+                      child: Icon(
+                        widget.mainIcon,
+                        color: Colors.white,
+                        size: 40,
+                      ),
                     ),
                   ],
                 ),
               ] else ...[
-                // 🎓 TROPHY / SUCCESS ANIMATION VIDEO EFFECT
+                // 🏆 4. SUCCESS: ROTATING GOLDEN SUNBURST & FLOATING VICTORY STARS
                 Stack(
                   alignment: Alignment.center,
+                  clipBehavior: Clip.none,
                   children: [
+                    // Rotating Golden Sunburst Rays
                     Transform.rotate(
-                      angle: -spinVal * 0.5,
+                      angle: spinVal * 0.5,
                       child: Icon(
-                        Icons.brightness_5_rounded,
-                        color: widget.accentColor.withOpacity(0.35),
-                        size: 60,
+                        Icons.brightness_7_rounded,
+                        color: const Color(0xFFFFD700).withOpacity(0.4),
+                        size: 64,
                       ),
                     ),
+                    // Floating Victory Stars
+                    ...List.generate(3, (i) {
+                      final dy = -((driveVal + (i * 0.33)) % 1.0) * 38;
+                      final op = (1.0 - ((driveVal + (i * 0.33)) % 1.0)).clamp(0.0, 1.0);
+                      return Positioned(
+                        top: 28 + dy,
+                        left: 14.0 + (i * 24),
+                        child: Opacity(
+                          opacity: op,
+                          child: const Icon(
+                            Icons.star_rounded,
+                            color: Color(0xFFFFD700),
+                            size: 13,
+                          ),
+                        ),
+                      );
+                    }),
+                    // Main Golden Trophy Icon
                     Transform.scale(
                       scale: pulseVal,
                       child: Icon(
                         widget.mainIcon,
                         color: const Color(0xFFFFD700),
-                        size: 42,
+                        size: 44,
                       ),
                     ),
                   ],
