@@ -16496,10 +16496,34 @@ class _PDFPageState extends State<PDFPage> {
 
                 final filteredDocs = docs.where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
-                  return (data['heading'] ?? "")
-                      .toLowerCase()
-                      .contains(searchText) ||
+
+                  // 1. Text Search Filter
+                  bool matchesSearch = (data['heading'] ?? "")
+                          .toLowerCase()
+                          .contains(searchText) ||
                       (data['desc'] ?? "").toLowerCase().contains(searchText);
+                  if (!matchesSearch) return false;
+
+                  // 2. Class Target Filter for Students
+                  if (userRole == "student") {
+                    final List<dynamic> assignedClasses = data['classes'] ?? [];
+                    if (assignedClasses.isNotEmpty) {
+                      final String studentClass = (UserSession.userData?['classSection'] ??
+                              UserSession.userData?['class'] ??
+                              "")
+                          .toString()
+                          .trim()
+                          .toLowerCase();
+
+                      if (studentClass.isNotEmpty) {
+                        bool isAssignedToMyClass = assignedClasses.any(
+                            (c) => c.toString().trim().toLowerCase() == studentClass);
+                        if (!isAssignedToMyClass) return false;
+                      }
+                    }
+                  }
+
+                  return true;
                 }).toList();
 
                 if (filteredDocs.isEmpty) {
@@ -16931,10 +16955,46 @@ class _VideoPageState extends State<VideoPage> {
 
           final docs = snapshot.data!.docs;
 
+          final filteredDocs = docs.where((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+
+            // 1. Text Search Filter
+            bool matchesSearch = (data['heading'] ?? "")
+                    .toLowerCase()
+                    .contains(searchText) ||
+                (data['desc'] ?? "").toLowerCase().contains(searchText);
+            if (!matchesSearch) return false;
+
+            // 2. Class Target Filter for Students
+            if (userRole == "student") {
+              final List<dynamic> assignedClasses = data['classes'] ?? [];
+              if (assignedClasses.isNotEmpty) {
+                final String studentClass = (UserSession.userData?['classSection'] ??
+                        UserSession.userData?['class'] ??
+                        "")
+                    .toString()
+                    .trim()
+                    .toLowerCase();
+
+                if (studentClass.isNotEmpty) {
+                  bool isAssignedToMyClass = assignedClasses.any(
+                      (c) => c.toString().trim().toLowerCase() == studentClass);
+                  if (!isAssignedToMyClass) return false;
+                }
+              }
+            }
+
+            return true;
+          }).toList();
+
+          if (filteredDocs.isEmpty) {
+            return const Center(child: Text("No Videos Available"));
+          }
+
           return ListView.builder(
-            itemCount: docs.length,
+            itemCount: filteredDocs.length,
             itemBuilder: (context, index) {
-              final data = docs[index].data() as Map<String, dynamic>;
+              final data = filteredDocs[index].data() as Map<String, dynamic>;
 
               return GestureDetector(
                 onTap: () {
@@ -16994,7 +17054,7 @@ class _VideoPageState extends State<VideoPage> {
                                 if (userRole != "student") ...[
                                   InkWell(
                                     onTap: () =>
-                                        showAddDialog(editDoc: docs[index]),
+                                        showAddDialog(editDoc: filteredDocs[index]),
                                     child: Icon(Icons.edit,
                                         size: 18, color: Colors.blue),
                                   ),
