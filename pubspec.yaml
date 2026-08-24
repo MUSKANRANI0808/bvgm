@@ -57,3 +57,5 @@ flutter:
     - assets/education_study_scene.jpg
     - assets/exams_preparation.json
     - assets/successful_target.json
+    - assets/data_analytics.json
+    - assets/discipline_animation.json

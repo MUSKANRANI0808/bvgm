@@ -3823,26 +3823,26 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
 
               // 3. CONCEPT-SPECIFIC HIGH-END 3D EMBLEM & DYNAMIC PARTICLES
               if (widget.storyIndex == 0) ...[
-                // 📚 1. EDUCATION: USER'S "Exams Preparation" LOTTIE ANIMATION (HUGE SIZE & CLEAN TRANSPARENT)
+                // 📚 1. EDUCATION: USER'S "Exams Preparation" LOTTIE ANIMATION (RECOLORED TO BLUE THEME, EXTRA HUGE SCALE)
                 SizedBox(
-                  width: 250,
-                  height: 210,
+                  width: 270,
+                  height: 230,
                   child: Stack(
                     alignment: Alignment.center,
                     clipBehavior: Clip.none,
                     children: [
-                      // Ambient Glow Backdrop Orb
+                      // Ambient Blue Glow Backdrop Orb
                       Transform.scale(
-                        scale: pulseVal * 1.35,
+                        scale: pulseVal * 1.45,
                         child: Container(
-                          width: 210,
-                          height: 185,
+                          width: 230,
+                          height: 200,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             gradient: RadialGradient(
                               colors: [
-                                widget.accentColor.withOpacity(0.30),
-                                widget.accentColor.withOpacity(0.08),
+                                const Color(0xFF60A5FA).withOpacity(0.35),
+                                widget.accentColor.withOpacity(0.10),
                                 Colors.transparent,
                               ],
                             ),
@@ -3850,19 +3850,19 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                         ),
                       ),
 
-                      // User's Exams Preparation Lottie Animation (Huge Scale & Clean Background)
+                      // User's Exams Preparation Lottie Animation (Blue Theme, Extra Huge 1.85x Scale)
                       Transform.scale(
-                        scale: 1.6,
+                        scale: 1.85,
                         child: Lottie.asset(
                           "assets/exams_preparation.json",
-                          width: 240,
-                          height: 200,
+                          width: 260,
+                          height: 220,
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) {
                             return Icon(
                               widget.mainIcon,
-                              color: Colors.white,
-                              size: 70,
+                              color: const Color(0xFF60A5FA),
+                              size: 75,
                             );
                           },
                         ),
@@ -3871,121 +3871,103 @@ class _AnimatedStoryVideoGraphicState extends State<AnimatedStoryVideoGraphic>
                   ),
                 ),
               ] else if (widget.storyIndex == 1) ...[
-                // 🛡️ 2. DISCIPLINE: 3D METALLIC SHIELD & TICKING PRECISION RADAR
-                Stack(
-                  alignment: Alignment.center,
-                  clipBehavior: Clip.none,
-                  children: [
-                    // Pulsing Radar Circle
-                    Transform.scale(
-                      scale: pulseVal * 1.1,
-                      child: Container(
-                        width: 72,
-                        height: 72,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: widget.accentColor.withOpacity(0.4), width: 1.8),
-                        ),
-                      ),
-                    ),
-                    // Ticking Radar Line
-                    Transform.rotate(
-                      angle: spinVal,
-                      child: Container(
-                        width: 60,
-                        height: 2,
-                        color: widget.accentColor.withOpacity(0.9),
-                      ),
-                    ),
-                    // Center Shield Emblem
-                    Transform.scale(
-                      scale: pulseVal,
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFF0F172A).withOpacity(0.6),
-                          border: Border.all(color: widget.accentColor.withOpacity(0.6), width: 1.8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: widget.accentColor.withOpacity(0.35),
-                              blurRadius: 16,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          widget.mainIcon,
-                          color: Colors.white,
-                          size: 44,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ] else if (widget.storyIndex == 2) ...[
-                // 🤝 3. RESPONSIBILITY: EXPANDING CONCENTRIC RIPPLES & GROWING SEEDLINGS
-                Stack(
-                  alignment: Alignment.center,
-                  clipBehavior: Clip.none,
-                  children: [
-                    // Expanding Concentric Ripple 1
-                    Transform.scale(
-                      scale: 0.7 + (driveVal * 0.6),
-                      child: Opacity(
-                        opacity: (1.0 - driveVal).clamp(0.0, 1.0),
+                // 🛡️ 2. DISCIPLINE: USER'S "Animation - 1721060819315.lottie" ANIMATION (PURPLE THEME & EXTRA HUGE SCALE)
+                SizedBox(
+                  width: 270,
+                  height: 230,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Ambient Purple Glow Backdrop Orb
+                      Transform.scale(
+                        scale: pulseVal * 1.45,
                         child: Container(
-                          width: 80,
-                          height: 80,
+                          width: 230,
+                          height: 200,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: widget.accentColor, width: 2),
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Upward floating leaf particles
-                    ...List.generate(3, (i) {
-                      final dy = -((driveVal + (i * 0.33)) % 1.0) * 40;
-                      final op = (1.0 - ((driveVal + (i * 0.33)) % 1.0)).clamp(0.0, 1.0);
-                      final List<String> leaves = ["🌱", "🍃", "💚"];
-                      return Positioned(
-                        top: 28 + dy,
-                        left: 15.0 + (i * 22),
-                        child: Opacity(
-                          opacity: op,
-                          child: Text(
-                            leaves[i % leaves.length],
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                        ),
-                      );
-                    }),
-                    // Center Helping Hands Emblem
-                    Transform.scale(
-                      scale: pulseVal,
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFF0F172A).withOpacity(0.6),
-                          border: Border.all(color: widget.accentColor.withOpacity(0.6), width: 1.8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: widget.accentColor.withOpacity(0.35),
-                              blurRadius: 16,
-                              spreadRadius: 2,
+                            gradient: RadialGradient(
+                              colors: [
+                                const Color(0xFFA78BFA).withOpacity(0.35),
+                                widget.accentColor.withOpacity(0.10),
+                                Colors.transparent,
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Icon(
-                          widget.mainIcon,
-                          color: Colors.white,
-                          size: 44,
+                          ),
                         ),
                       ),
+
+                      // User's Discipline Lottie Animation (Purple Theme, Extra Huge 1.8x Scale)
+                      Transform.scale(
+                        scale: 1.8,
+                        child: Lottie.asset(
+                          "assets/discipline_animation.json",
+                          width: 260,
+                          height: 220,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              widget.mainIcon,
+                              color: const Color(0xFFA78BFA),
+                              size: 75,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ] else if (widget.storyIndex == 2) ...[
+                // 🤝 3. RESPONSIBILITY: USER'S "Data analytics techniques.lottie" ANIMATION (EXTRA HUGE SCALE & DOWNWARDS SHIFT)
+                Transform.translate(
+                  offset: const Offset(0, 12),
+                  child: SizedBox(
+                    width: 290,
+                    height: 240,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      clipBehavior: Clip.none,
+                      children: [
+                        // Ambient Emerald Glow Backdrop Orb
+                        Transform.scale(
+                          scale: pulseVal * 1.5,
+                          child: Container(
+                            width: 240,
+                            height: 210,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  const Color(0xFF34D399).withOpacity(0.35),
+                                  const Color(0xFF059669).withOpacity(0.10),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // User's Data Analytics Techniques Lottie Animation (Green Theme, Extra Huge 2.15x Scale)
+                        Transform.scale(
+                          scale: 2.15,
+                          child: Lottie.asset(
+                            "assets/data_analytics.json",
+                            width: 280,
+                            height: 230,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                widget.mainIcon,
+                                color: const Color(0xFF34D399),
+                                size: 80,
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ] else ...[
                 // 🏆 4. SUCCESS: USER'S "Successful target.json" LOTTIE ANIMATION (EXTRA HUGE SCALE & TRANSPARENT BACKDROP)
